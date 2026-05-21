@@ -5,6 +5,12 @@
   color: var(--ink);
 }
 
+/* Used when the room sits directly below a CrumbBar; matches the product
+   page's main split top padding so the rhythm is consistent. */
+.compactTop {
+  padding-top: clamp(24px, 4vw, 48px);
+}
+
 .container {
   width: 100%;
   max-width: var(--max-w);

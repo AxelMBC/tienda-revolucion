@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CrumbBar, PagerLink } from "@/components/layout/CrumbBar";
 import { PiezaMedia } from "@/components/product/PiezaMedia";
 import { PiezaInfo } from "@/components/product/PiezaInfo";
 import { PiezaStory } from "@/components/product/PiezaStory";
@@ -125,29 +125,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className={styles.crumbBar}>
-        <div className={styles.crumbInner}>
-          <nav aria-label="Migas de pan" className={styles.crumbs}>
-            <Link href="/">Casa Nayar</Link>
-            <span className={styles.crumbSep} aria-hidden="true">/</span>
-            <Link href="/catalogo">Catálogo</Link>
-            <span className={styles.crumbSep} aria-hidden="true">/</span>
-            <span className={styles.crumbCurrent}>
-              {categorySingular(product.category)} Nº {number}
-            </span>
-          </nav>
-
-          <div className={styles.pager}>
-            <Link href="/catalogo">
-              <span className={styles.pagerArrow}>←</span> Volver al catálogo
-            </Link>
-            <Link href={`/producto/${next.slug}`}>
-              Nº {nextNumber} {next.name.split(" ")[0]}{" "}
-              <span className={styles.pagerArrow}>→</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <CrumbBar
+        crumbs={[
+          { label: "Revolución", href: "/" },
+          { label: "Catálogo", href: "/catalogo" },
+          { label: `${categorySingular(product.category)} Nº ${number}` },
+        ]}
+        pager={
+          <>
+            <PagerLink href="/catalogo" direction="back">
+              Volver al catálogo
+            </PagerLink>
+            <PagerLink href={`/producto/${next.slug}`} direction="forward">
+              Nº {nextNumber} {next.name.split(" ")[0]}
+            </PagerLink>
+          </>
+        }
+      />
 
       <div className={styles.split}>
         <PiezaMedia

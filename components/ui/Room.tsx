@@ -8,6 +8,7 @@ interface RoomProps {
   tone?: Tone;
   id?: string;
   className?: string;
+  compactTop?: boolean;
   children: ReactNode;
 }
 
@@ -17,8 +18,21 @@ function toneClass(tone: Tone): string {
   return "";
 }
 
-export function Room({ tone = "ivory", id, className, children }: RoomProps) {
-  const cls = [styles.room, toneClass(tone), className].filter(Boolean).join(" ");
+export function Room({
+  tone = "ivory",
+  id,
+  className,
+  compactTop = false,
+  children,
+}: RoomProps) {
+  const cls = [
+    styles.room,
+    compactTop && styles.compactTop,
+    toneClass(tone),
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
   return (
     <section id={id} className={cls}>
       <div className={styles.container}>{children}</div>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CrumbBar, PagerLink } from "@/components/layout/CrumbBar";
 import { Room } from "@/components/ui/Room";
 import { Hairline } from "@/components/ui/Hairline";
 import { CatalogFilters } from "@/components/filters/CatalogFilters";
@@ -71,7 +72,19 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     products.length === 1 ? "1 pieza" : `${products.length} piezas`;
 
   return (
-    <Room tone="ivory" id="catalogo">
+    <>
+      <CrumbBar
+        crumbs={[
+          { label: "Revolución", href: "/" },
+          { label: "Catálogo" },
+        ]}
+        pager={
+          <PagerLink href="/" direction="back">
+            Volver al inicio
+          </PagerLink>
+        }
+      />
+      <Room tone="ivory" id="catalogo" compactTop>
       <div className={styles.head}>
         <CatalogFilters filteredCount={products.length} />
       </div>
@@ -105,6 +118,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
           </div>
         </>
       )}
-    </Room>
+      </Room>
+    </>
   );
 }
