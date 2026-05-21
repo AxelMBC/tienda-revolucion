@@ -14,7 +14,7 @@ export function Visit() {
           <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-smoke)] mb-4">
             La visita
           </p>
-          <h2 className="font-display font-medium text-3xl sm:text-4xl text-onyx mb-16 max-w-xl">
+          <h2 className="font-display text-3xl sm:text-4xl text-onyx mb-16 max-w-xl">
             Visítanos.
           </h2>
         </Reveal>

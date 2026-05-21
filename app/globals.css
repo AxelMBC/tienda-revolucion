@@ -118,6 +118,18 @@
 
   --tracking-wordmark: 0.18em;
   --tracking-wide-2: 0.12em;
+
+  /* New-system color aliases (resolve to :root palette in tokens block above).
+     These let Tailwind v4 generate utilities (text-onyx, bg-canvas, …) and
+     let arbitrary refs like bg-[var(--color-onyx)] resolve. --color-oxblood
+     and --color-bone already exist above with legacy hex values; for the
+     STYLE.md oxblood/bone, use var(--oxblood) / var(--bone) directly. */
+  --color-onyx:    var(--onyx);
+  --color-ivory:   var(--ivory);
+  --color-bronze:  var(--bronze);
+  --color-smoke:   var(--smoke);
+  --color-canvas:  var(--canvas);
+  --color-ink:     var(--ink);
 }
 
 /* ============================================

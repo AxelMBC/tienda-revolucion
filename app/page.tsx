@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Hero } from "@/components/home/Hero";
-import { FeaturedGrid } from "@/components/home/FeaturedGrid";
-import { CategoryCards } from "@/components/home/CategoryCards";
-import { ValueProps } from "@/components/home/ValueProps";
+import { ThePieces } from "@/components/home/ThePieces";
+import { About } from "@/components/home/About";
+import { Visit } from "@/components/home/Visit";
 
 export const revalidate = 3600;
 
@@ -17,9 +17,9 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <FeaturedGrid />
-      <CategoryCards />
-      <ValueProps />
+      <ThePieces />
+      <About />
+      <Visit />
     </>
   );
 }

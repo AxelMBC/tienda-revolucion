@@ -3,7 +3,7 @@ import { Reveal } from "@/components/ui/Reveal";
 export function About() {
   return (
     <section
-      className="relative bg-[var(--color-onyx)] text-[var(--color-canvas)] border-t border-[var(--color-oxblood-brief)]"
+      className="relative bg-[var(--color-onyx)] text-[var(--color-canvas)] border-t border-[var(--rule)]"
     >
       <div className="mx-auto max-w-2xl px-6 sm:px-10 lg:px-14 py-32 sm:py-44">
         <Reveal>

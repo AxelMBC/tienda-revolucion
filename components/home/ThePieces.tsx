@@ -53,7 +53,7 @@ function PieceRow({ product, index }: { product: Product; index: number }) {
             href={`/producto/${product.slug}`}
             className="group inline-block"
           >
-            <h3 className="font-display font-medium text-2xl sm:text-3xl text-onyx leading-tight">
+            <h3 className="font-display text-2xl sm:text-3xl text-onyx leading-tight">
               {product.name}
             </h3>
             <span
@@ -103,7 +103,7 @@ export function ThePieces() {
           <p className="text-[10px] uppercase tracking-[0.32em] text-[var(--color-smoke)] mb-4">
             Las piezas
           </p>
-          <h2 className="font-display font-medium text-2xl sm:text-3xl text-onyx max-w-xl">
+          <h2 className="font-display text-2xl sm:text-3xl text-onyx max-w-xl">
             Pocas, escogidas una por una.
           </h2>
         </Reveal>
