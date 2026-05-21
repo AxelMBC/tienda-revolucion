@@ -1,0 +1,35 @@
+export type Size = "S" | "M" | "L" | "XL";
+
+export type Category =
+  | "camisas"
+  | "pantalones"
+  | "chaquetas"
+  | "accesorios";
+
+export interface Product {
+  slug: string;
+  name: string;
+  description: string;
+  price: number;
+  images: string[];
+  category: Category;
+  sizes: Size[];
+  stock: number;
+  featured: boolean;
+}
+
+export interface CartItem {
+  slug: string;
+  name: string;
+  size: Size;
+  qty: number;
+  unitPrice: number;
+  image: string;
+}
+
+export interface CategoryMeta {
+  slug: Category;
+  label: string;
+  cover: string;
+  tagline: string;
+}

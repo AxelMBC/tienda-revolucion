@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="1200" height="800" role="img" aria-label="Accesorios">
+  <defs>
+    <linearGradient id="gc-Accesorios" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b8893b"/>
+      <stop offset="100%" stop-color="#3a2418"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#gc-Accesorios)"/>
+  <rect x="60" y="60" width="1080" height="680" fill="none" stroke="#f3ece1" stroke-width="1.5" opacity="0.4"/>
+  <g fill="#f3ece1" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">
+    <text x="600" y="430" font-size="120" font-weight="600">Accesorios</text>
+  </g>
+  <g fill="#f3ece1" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">
+    <text x="600" y="490" font-size="20" letter-spacing="10">REVOLUCIÓN</text>
+  </g>
+</svg>

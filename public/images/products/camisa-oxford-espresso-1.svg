@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1500" width="1200" height="1500" role="img" aria-label="Camisa Oxford Espresso">
+  <defs>
+    <linearGradient id="g-camisa-oxford-espresso-1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3a2418"/>
+      <stop offset="100%" stop-color="#141416"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1500" fill="url(#g-camisa-oxford-espresso-1)"/>
+  <g transform="translate(600 750) rotate(-8)" opacity="0.18">
+    <rect x="-360" y="-540" width="720" height="1080" fill="#f3ece1"/>
+  </g>
+  <g transform="translate(600 750)">
+    <line x1="-160" y1="0" x2="160" y2="0" stroke="#f3ece1" stroke-width="2"/>
+  </g>
+  <g fill="#f3ece1" font-family="Georgia, 'Times New Roman', serif">
+    <text x="80" y="140" font-size="38" letter-spacing="14" font-weight="600" opacity="0.85">REVOLUCIÓN</text>
+  </g>
+  <g fill="#f3ece1" font-family="Georgia, 'Times New Roman', serif" text-anchor="middle">
+    <text x="600" y="790" font-size="72" font-weight="600">Camisa Oxford Espresso</text>
+    <text x="600" y="860" font-size="22" letter-spacing="10" opacity="0.7">VISTA 1</text>
+  </g>
+  <g fill="#f3ece1" font-family="Georgia, 'Times New Roman', serif">
+    <text x="80" y="1420" font-size="20" letter-spacing="6" opacity="0.7">CATÁLOGO · 2026</text>
+  </g>
+</svg>
