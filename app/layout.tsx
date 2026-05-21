@@ -1,20 +1,28 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Sora } from "next/font/google";
+import { Newsreader, DM_Sans, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartDrawer } from "@/components/layout/CartDrawer";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  weight: ["500", "600", "700"],
+const serif = Newsreader({
+  variable: "--font-serif",
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
   display: "swap",
 });
 
-const sora = Sora({
-  variable: "--font-sora",
-  weight: ["400", "500", "600", "700"],
+const sans = DM_Sans({
+  variable: "--font-sans",
+  weight: ["300", "400", "500"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const mono = DM_Mono({
+  variable: "--font-mono",
+  weight: ["400", "500"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -60,11 +68,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="es"
-      className={`${cormorant.variable} ${sora.variable} h-full`}
+      lang="es-MX"
+      className={`${serif.variable} ${sans.variable} ${mono.variable} h-full`}
     >
       <body
-        className="min-h-full flex flex-col bg-obsidian text-bone antialiased"
+        className="min-h-full flex flex-col"
         suppressHydrationWarning
       >
         <Header />

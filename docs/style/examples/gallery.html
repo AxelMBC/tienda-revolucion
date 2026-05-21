@@ -1,0 +1,202 @@
+<!doctype html>
+<!--
+  STATIC REFERENCE — Gallery (Las Piezas)
+  Onyx room, asymmetric 12-col grid, hover hairlines, mono captions.
+-->
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<title>Reference — Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=DM+Sans:opsz,wght@9..40,300..500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  body { margin: 0; }
+
+  .room--ink {
+    background: var(--onyx);
+    color: var(--ivory);
+    padding-block: var(--room-pad-y);
+    padding-inline: var(--gutter);
+    --rule: rgba(245, 241, 234, 0.12);
+    --muted: rgba(245, 241, 234, 0.6);
+  }
+
+  .room__head {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 920px;
+    margin: 0 auto clamp(48px, 7vw, 96px);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px; font-weight: 400;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .eyebrow .dot {
+    width: 4px; height: 4px; background: var(--bronze); border-radius: 50%;
+  }
+  .room__title {
+    font-family: var(--font-serif);
+    font-style: italic; font-weight: 380;
+    font-size: clamp(28px, 3.6vw, 44px);
+    line-height: 1.1; letter-spacing: -0.012em;
+    margin: 12px 0 0;
+    text-wrap: balance;
+  }
+  .room__lede {
+    font-family: var(--font-sans);
+    font-weight: 300; font-size: 15px;
+    line-height: 1.7; color: var(--muted);
+    max-width: 52ch; margin: 18px 0 0;
+  }
+
+  .pieces {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    column-gap: clamp(16px, 2vw, 28px);
+    row-gap: clamp(80px, 10vw, 160px);
+    align-items: start;
+  }
+
+  .piece { position: relative; }
+
+  .piece__frame {
+    position: relative;
+    background: rgba(245,241,234,0.04);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .piece__frame::after {
+    content: ""; position: absolute; inset: 0;
+    border: 1px solid rgba(245,241,234,0.05);
+    pointer-events: none;
+  }
+  .piece__frame::before {
+    content: "";
+    position: absolute; left: 12px; right: 12px; bottom: 12px;
+    height: 1px; background: var(--bronze);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.9s var(--ease);
+    z-index: 2;
+  }
+  .piece:hover .piece__frame::before { transform: scaleX(1); }
+
+  .piece__img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 1.6s var(--ease), filter 1.2s ease;
+    filter: saturate(0.92) contrast(1.02);
+    background: linear-gradient(135deg, rgba(184,137,59,0.08), rgba(74,20,25,0.12));
+  }
+  .piece:hover .piece__img { transform: scale(1.03); filter: saturate(1); }
+
+  .piece--tall .piece__frame { aspect-ratio: 4/5; }
+  .piece--square .piece__frame { aspect-ratio: 1/1; }
+  .piece--wide .piece__frame { aspect-ratio: 5/6; }
+
+  .piece--1 { grid-column: 1 / span 5; }
+  .piece--2 { grid-column: 7 / span 5; margin-top: clamp(40px, 6vw, 110px); }
+  .piece--3 { grid-column: 2 / span 4; }
+  .piece--4 { grid-column: 7 / span 6; margin-top: clamp(20px, 3vw, 60px); }
+
+  .piece__caption {
+    display: grid; grid-template-columns: auto 1fr auto;
+    gap: 12px; align-items: baseline;
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .piece__num { color: var(--bronze); }
+  .piece__title {
+    font-family: var(--font-serif); font-style: italic;
+    font-weight: 380; font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.15; letter-spacing: -0.012em;
+    margin: 14px 0 0;
+  }
+  .piece__brief {
+    font-family: var(--font-sans); font-weight: 300;
+    font-size: 14px; line-height: 1.6;
+    margin: 10px 0 0; color: var(--muted);
+    max-width: 38ch;
+  }
+  .piece__price {
+    font-family: var(--font-mono); font-size: 12px;
+    letter-spacing: 0.14em; color: var(--bronze);
+    margin-top: 14px;
+  }
+
+  @media (max-width: 600px) {
+    .pieces { grid-template-columns: 1fr; row-gap: 64px; }
+    .piece { grid-column: 1 / -1 !important; margin-top: 0 !important; }
+  }
+</style>
+</head>
+<body class="room--ink">
+
+<header class="room__head">
+  <p class="eyebrow"><span class="dot"></span><span>Las piezas · Selección OI 26</span></p>
+  <h2 class="room__title">Seis piezas, escogidas porque sí.<br>El resto, en la tienda.</h2>
+  <p class="room__lede">No es catálogo. Es lo que estamos colgando esta semana en la pared del fondo. Si te interesa, escríbenos por Instagram o pasa por la tienda — todo está en talla y se puede probar.</p>
+</header>
+
+<div class="pieces">
+
+  <article class="piece piece--1 piece--tall">
+    <div class="piece__frame"><div class="piece__img"></div></div>
+    <p class="piece__caption">
+      <span class="piece__num">Nº 01</span>
+      <span>Camisa · Seda jacquard</span>
+      <span>S — XL</span>
+    </p>
+    <h3 class="piece__title">Morada, para la noche larga</h3>
+    <p class="piece__brief">Seda con relieve geométrico. Cae pesada, suelta bien. La camisa que se pone cuando ya se decidió quedarse despierto.</p>
+    <p class="piece__price">$1,890 mxn</p>
+  </article>
+
+  <article class="piece piece--2 piece--square">
+    <div class="piece__frame"><div class="piece__img"></div></div>
+    <p class="piece__caption">
+      <span class="piece__num">Nº 02</span>
+      <span>Sudadera · Mezclilla</span>
+      <span>M — XXL</span>
+    </p>
+    <h3 class="piece__title">Sudadera, mezclilla lavada</h3>
+    <p class="piece__brief">Algodón pesado, lavada en piedra. Estampado discreto al frente.</p>
+    <p class="piece__price">$1,290 mxn</p>
+  </article>
+
+  <article class="piece piece--3 piece--wide">
+    <div class="piece__frame"><div class="piece__img"></div></div>
+    <p class="piece__caption">
+      <span class="piece__num">Nº 03</span>
+      <span>Playera · Algodón</span>
+      <span>S — XL</span>
+    </p>
+    <h3 class="piece__title">Blanca, con gusto por el dibujo</h3>
+    <p class="piece__brief">Tejido grueso, caída amplia. El estampado vive solo en el pecho.</p>
+    <p class="piece__price">$890 mxn</p>
+  </article>
+
+  <article class="piece piece--4 piece--tall">
+    <div class="piece__frame"><div class="piece__img"></div></div>
+    <p class="piece__caption">
+      <span class="piece__num">Nº 04</span>
+      <span>Polo · Algodón mercerizado</span>
+      <span>S — XL</span>
+    </p>
+    <h3 class="piece__title">Polo, color arena</h3>
+    <p class="piece__brief">Textura tono sobre tono, cierre corto al cuello.</p>
+    <p class="piece__price">$1,490 mxn</p>
+  </article>
+
+</div>
+
+</body>
+</html>

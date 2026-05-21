@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+  STATIC REFERENCE — Hero
+  This file is the visual oracle for the hero pattern.
+  Do not edit. When implementing the Next.js Hero component, match
+  this markup rhythm, CSS variable usage, and class structure.
+-->
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<title>Reference — Hero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&family=DM+Sans:opsz,wght@9..40,300..500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  body { margin: 0; }
+
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 640px;
+    overflow: hidden;
+    background: var(--onyx);
+    color: var(--ivory);
+  }
+  .hero__bg {
+    position: absolute; inset: 0;
+    background-size: cover;
+    background-position: center 30%;
+    filter: saturate(0.7) contrast(1.05) brightness(0.6);
+    transform: scale(1.06);
+    background-image: linear-gradient(135deg, #1a1413 0%, #0a0a0a 60%, #2a1418 100%);
+  }
+  .hero__veil {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.15) 30%, rgba(10,10,10,0.05) 60%, rgba(10,10,10,0.75) 100%),
+      radial-gradient(ellipse at 30% 40%, rgba(74,20,25,0.18), transparent 60%);
+  }
+  .hero__content {
+    position: relative; z-index: 2;
+    height: 100%;
+    padding: 120px var(--gutter) var(--gutter);
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: 36px;
+  }
+  .hero__kicker {
+    align-self: end;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: rgba(245,241,234,0.75);
+    display: flex; align-items: center; gap: 14px;
+    margin: 0;
+  }
+  .hero__kicker::before {
+    content: ""; width: 28px; height: 1px; background: var(--bronze);
+  }
+  .hero__title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 380;
+    font-size: clamp(64px, 11vw, 168px);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
+    margin: 0;
+    max-width: 12ch;
+  }
+  .hero__foot {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 24px;
+    align-items: end;
+    padding-top: 40px;
+    border-top: 1px solid rgba(245,241,234,0.18);
+  }
+  .hero__tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(15px, 1.5vw, 19px);
+    font-weight: 380;
+    max-width: 36ch;
+    color: rgba(245,241,234,0.9);
+    line-height: 1.45;
+    margin: 0;
+  }
+  .hero__meta {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(245,241,234,0.55);
+    text-align: right;
+    line-height: 1.8;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero__bg" aria-hidden="true"></div>
+  <div class="hero__veil" aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <p class="hero__kicker">Tienda · de · Ropa — desde 2019 · Tepic, Nay.</p>
+
+    <h1 class="hero__title">Revolución</h1>
+
+    <div class="hero__foot">
+      <p class="hero__tagline">
+        Una tienda pequeña en el centro de Tepic.<br>
+        Ropa para hombre, escogida una por una.
+      </p>
+      <p class="hero__meta">Lat 21.5041° N<br>Lon 104.8946° W</p>
+      <p class="hero__meta">Otoño / Invierno<br>MMXXVI</p>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

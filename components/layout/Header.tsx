@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Container } from "@/components/ui/Container";
 import { Wordmark } from "@/components/ui/Wordmark";
@@ -22,6 +23,10 @@ export function Header() {
   const [catOpen, setCatOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const reduce = useReducedMotion();
+  const pathname = usePathname();
+  // On the home route, the hero is full-bleed; float the header on top of it.
+  // Other routes still wear the old solid chrome until their own slices land.
+  const overlay = pathname === "/";
 
   return (
     <>
@@ -29,7 +34,12 @@ export function Header() {
         initial={reduce ? false : { y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: EASE }}
-        className="sticky top-0 z-40 border-b border-[var(--color-border-soft)] bg-[var(--color-obsidian)]/85 backdrop-blur-md"
+        className={cn(
+          "z-40",
+          overlay
+            ? "fixed top-0 left-0 right-0 bg-transparent"
+            : "sticky top-0 border-b border-[var(--color-border-soft)] bg-[var(--color-obsidian)]/85 backdrop-blur-md",
+        )}
       >
         <Container>
           <div className="flex h-16 items-center justify-between gap-4">
@@ -37,7 +47,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMobileOpen(true)}
-              className="md:hidden inline-flex h-10 w-10 items-center justify-center text-bone hover:text-[var(--color-gold)] transition-colors cursor-pointer"
+              className="md:hidden inline-flex h-10 w-10 items-center justify-center text-[rgba(245,241,234,0.85)] hover:text-[var(--ivory)] transition-colors cursor-pointer"
               aria-label="Abrir menú"
             >
               <svg
@@ -66,18 +76,20 @@ export function Header() {
             </Link>
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-[0.18em] font-medium">
+            <nav className="hidden md:flex items-center gap-9 font-sans text-[13px] lowercase text-[rgba(245,241,234,0.7)]">
               <Link
                 href="/"
-                className="text-[var(--color-cream)] hover:text-[var(--color-gold)] transition-colors"
+                className="hover:text-[var(--ivory)] transition-colors"
+                style={{ letterSpacing: "0.04em" }}
               >
-                Inicio
+                inicio
               </Link>
               <Link
                 href="/catalogo"
-                className="text-[var(--color-cream)] hover:text-[var(--color-gold)] transition-colors"
+                className="hover:text-[var(--ivory)] transition-colors"
+                style={{ letterSpacing: "0.04em" }}
               >
-                Catálogo
+                catálogo
               </Link>
               <div
                 className="relative"
@@ -86,12 +98,13 @@ export function Header() {
               >
                 <button
                   type="button"
-                  className="text-[var(--color-cream)] hover:text-[var(--color-gold)] transition-colors uppercase tracking-[0.18em] cursor-pointer"
+                  className="hover:text-[var(--ivory)] transition-colors cursor-pointer"
+                  style={{ letterSpacing: "0.04em" }}
                   onFocus={() => setCatOpen(true)}
                   aria-expanded={catOpen}
                   aria-haspopup="true"
                 >
-                  Categorías
+                  categorías
                 </button>
                 <div
                   className={cn(
@@ -101,15 +114,16 @@ export function Header() {
                       : "opacity-0 pointer-events-none",
                   )}
                 >
-                  <div className="min-w-[200px] border border-[var(--color-border-soft)] bg-[var(--color-obsidian-2)] rounded-sm py-2 shadow-lg">
+                  <div className="min-w-[200px] border border-[rgba(245,241,234,0.14)] bg-[rgba(10,10,10,0.92)] backdrop-blur-md py-2">
                     {categories.map((c) => (
                       <Link
                         key={c.slug}
                         href={`/catalogo?category=${c.slug}`}
-                        className="block px-4 py-2 text-[11px] uppercase tracking-[0.16em] text-[var(--color-cream)] hover:text-[var(--color-gold)] hover:bg-[var(--color-obsidian)] transition-colors"
+                        className="block px-4 py-2 text-[13px] lowercase text-[rgba(245,241,234,0.7)] hover:text-[var(--ivory)] transition-colors"
+                        style={{ letterSpacing: "0.04em" }}
                         onClick={() => setCatOpen(false)}
                       >
-                        {c.label}
+                        {c.label.toLowerCase()}
                       </Link>
                     ))}
                   </div>
@@ -121,7 +135,7 @@ export function Header() {
             <button
               type="button"
               onClick={openCart}
-              className="relative inline-flex h-10 w-10 items-center justify-center text-bone hover:text-[var(--color-gold)] transition-colors cursor-pointer"
+              className="relative inline-flex h-10 w-10 items-center justify-center text-[rgba(245,241,234,0.85)] hover:text-[var(--ivory)] transition-colors cursor-pointer"
               aria-label="Abrir carrito"
             >
               <svg
@@ -145,14 +159,15 @@ export function Header() {
                 {mounted && count > 0 && (
                   <motion.span
                     key={count}
-                    initial={reduce ? false : { scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={reduce ? undefined : { scale: 0.5, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 520, damping: 22 }}
-                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-[var(--color-oxblood)] text-[10px] font-semibold text-bone tracking-normal"
+                    initial={reduce ? false : { opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={reduce ? undefined : { opacity: 0 }}
+                    transition={{ duration: 0.25, ease: EASE }}
+                    className="absolute -top-1 -right-1 font-mono text-[10px] text-[var(--bronze)]"
+                    style={{ letterSpacing: "0.14em" }}
                     aria-label={`${count} artículos en el carrito`}
                   >
-                    {count}
+                    {String(count).padStart(2, "0")}
                   </motion.span>
                 )}
               </AnimatePresence>

@@ -1,0 +1,121 @@
+.hero {
+  position: relative;
+  height: 100svh;
+  min-height: 640px;
+  overflow: hidden;
+  background: var(--onyx);
+  color: var(--ivory);
+}
+
+.heroBg {
+  object-fit: cover;
+  object-position: center 30%;
+  filter: saturate(0.7) contrast(1.05) brightness(0.6);
+  transform: scale(1.06);
+  z-index: 0;
+}
+
+.heroVeil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 10, 10, 0.55) 0%,
+      rgba(10, 10, 10, 0.15) 30%,
+      rgba(10, 10, 10, 0.05) 60%,
+      rgba(10, 10, 10, 0.75) 100%
+    ),
+    radial-gradient(ellipse at 30% 40%, rgba(74, 20, 25, 0.18), transparent 60%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  padding: 120px var(--gutter) var(--gutter);
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 36px;
+}
+
+.heroKicker {
+  align-self: end;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(245, 241, 234, 0.75);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+}
+
+.heroKicker::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--bronze);
+  flex-shrink: 0;
+}
+
+.heroTitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 380;
+  font-size: clamp(64px, 11vw, 168px);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  margin: 0;
+  max-width: 12ch;
+  text-wrap: balance;
+}
+
+.heroFoot {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 24px;
+  align-items: end;
+  padding-top: 40px;
+  border-top: 1px solid rgba(245, 241, 234, 0.18);
+}
+
+.heroTagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(15px, 1.5vw, 19px);
+  font-weight: 380;
+  max-width: 36ch;
+  color: rgba(245, 241, 234, 0.9);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.heroMeta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245, 241, 234, 0.55);
+  text-align: right;
+  line-height: 1.8;
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .heroContent {
+    padding-top: 96px;
+    gap: 28px;
+  }
+  .heroFoot {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding-top: 24px;
+  }
+  .heroMeta {
+    text-align: left;
+  }
+}

@@ -31,7 +31,7 @@ export function Wordmark({
     >
       REVOLUCIÓN
       {withDot && (
-        <span className="text-[var(--color-oxblood-2)]" aria-hidden>
+        <span className="text-[var(--bronze)]" aria-hidden>
           .
         </span>
       )}
