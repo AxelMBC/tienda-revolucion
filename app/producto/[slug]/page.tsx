@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/ui/Reveal";
-import { ProductGallery } from "@/components/product/ProductGallery";
-import { ProductPurchasePanel } from "@/components/product/ProductPurchasePanel";
-import { PRODUCTS, getBySlug } from "@/lib/products";
+import { PiezaMedia } from "@/components/product/PiezaMedia";
+import { PiezaInfo } from "@/components/product/PiezaInfo";
+import { PiezaStory } from "@/components/product/PiezaStory";
+import { PiezaQuote } from "@/components/product/PiezaQuote";
+import { PiezaRelated } from "@/components/product/PiezaRelated";
+import {
+  PRODUCTS,
+  categorySingular,
+  getBySlug,
+  getRelatedPieces,
+} from "@/lib/products";
+import type { Size } from "@/lib/types";
+import styles from "./producto.module.css";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -23,21 +31,68 @@ export async function generateMetadata({
   if (!product) return { title: "Producto no encontrado" };
   return {
     title: product.name,
-    description: product.description,
+    description: product.lede ?? product.description,
     alternates: { canonical: `/producto/${product.slug}` },
     openGraph: {
       title: product.name,
-      description: product.description,
+      description: product.lede ?? product.description,
       images: [product.images[0]],
       type: "website",
     },
   };
 }
 
+function formatNumber(idx: number): string {
+  return String(idx + 1).padStart(2, "0");
+}
+
+function pickDefaultSize(product: ReturnType<typeof getBySlug>): Size {
+  if (!product) return "M";
+  if (product.defaultSize && product.sizes.includes(product.defaultSize)) {
+    return product.defaultSize;
+  }
+  return product.sizes[0] ?? "M";
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = getBySlug(slug);
   if (!product) notFound();
+
+  const allIdx = PRODUCTS.findIndex((p) => p.slug === product.slug);
+  const number = formatNumber(allIdx);
+  const next = PRODUCTS[(allIdx + 1) % PRODUCTS.length];
+  const nextNumber = formatNumber((allIdx + 1) % PRODUCTS.length);
+
+  const categoryLabel = product.material
+    ? `${categorySingular(product.category)} · ${product.material}`
+    : categorySingular(product.category);
+
+  const specs = product.specs ?? {
+    material: product.material ?? "Especificación pendiente.",
+    corte: "Especificación pendiente.",
+    hechura: "Especificación pendiente.",
+    color: product.finish ?? "Especificación pendiente.",
+    cuidado: "Lavar en frío. Plancha tibia. Sin secadora.",
+    procedencia: "Hecho en México.",
+  };
+
+  const shipping = product.shipping ?? {
+    local: "Nayarit · 24–48 h",
+    localNote: "Resto del país: 3–5 días hábiles.",
+    pickup: "En la tienda, mismo día",
+    pickupNote: "Av. México 234, Centro · Tepic.",
+  };
+
+  const imageLabels = product.imageLabels ?? [
+    "Vista frontal",
+    "Espalda",
+    "Detalle",
+    "Caída",
+  ];
+
+  const related = getRelatedPieces(product.slug, 3);
+  const defaultSize = pickDefaultSize(product);
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -46,7 +101,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description,
+    description: product.lede ?? product.description,
     image: product.images.map((img) => `${siteUrl}${img}`),
     sku: product.slug,
     brand: { "@type": "Brand", name: "Revolución" },
@@ -64,37 +119,60 @@ export default async function ProductPage({ params }: ProductPageProps) {
   };
 
   return (
-    <Container className="py-12 sm:py-16">
+    <div className={styles.page}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <nav
-        aria-label="Migas de pan"
-        className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-muted)] mb-10"
-      >
-        <Link href="/" className="hover:text-[var(--color-gold)]">
-          Inicio
-        </Link>
-        <span className="mx-2">/</span>
-        <Link
-          href={`/catalogo?category=${product.category}`}
-          className="hover:text-[var(--color-gold)]"
-        >
-          {product.category}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-[var(--color-cream)]">{product.name}</span>
-      </nav>
 
-      <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <Reveal y={20}>
-          <ProductGallery images={product.images} alt={product.name} />
-        </Reveal>
-        <Reveal y={20} delay={0.15}>
-          <ProductPurchasePanel product={product} />
-        </Reveal>
+      <div className={styles.crumbBar}>
+        <div className={styles.crumbInner}>
+          <nav aria-label="Migas de pan" className={styles.crumbs}>
+            <Link href="/">Casa Nayar</Link>
+            <span className={styles.crumbSep} aria-hidden="true">/</span>
+            <Link href="/catalogo">Catálogo</Link>
+            <span className={styles.crumbSep} aria-hidden="true">/</span>
+            <span className={styles.crumbCurrent}>
+              {categorySingular(product.category)} Nº {number}
+            </span>
+          </nav>
+
+          <div className={styles.pager}>
+            <Link href="/catalogo">
+              <span className={styles.pagerArrow}>←</span> Volver al catálogo
+            </Link>
+            <Link href={`/producto/${next.slug}`}>
+              Nº {nextNumber} {next.name.split(" ")[0]}{" "}
+              <span className={styles.pagerArrow}>→</span>
+            </Link>
+          </div>
+        </div>
       </div>
-    </Container>
+
+      <div className={styles.split}>
+        <PiezaMedia
+          number={`Nº ${number} · OI MMXXVI`}
+          numberCaption={`${categorySingular(product.category)} nº ${number} · vista`}
+          edition={product.edition}
+          images={product.images}
+          imageLabels={imageLabels}
+          alt={product.name}
+        />
+        <PiezaInfo
+          product={product}
+          number={number}
+          categoryLabel={categoryLabel}
+          specs={specs}
+          shipping={shipping}
+          defaultSize={defaultSize}
+        />
+      </div>
+
+      {product.story && <PiezaStory story={product.story} />}
+
+      {product.quote && <PiezaQuote quote={product.quote} />}
+
+      <PiezaRelated items={related} />
+    </div>
   );
 }
