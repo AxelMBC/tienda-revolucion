@@ -1,0 +1,13 @@
+.hairline {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--rule);
+  border: 0;
+  margin: 0;
+}
+
+.bronze {
+  background: var(--bronze);
+  opacity: 0.55;
+}

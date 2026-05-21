@@ -1,4 +1,11 @@
-import type { Category, CategoryMeta, Product, Size } from "./types";
+import type {
+  CardStatus,
+  Category,
+  CategoryMeta,
+  Product,
+  Size,
+  SortKey,
+} from "./types";
 
 const CATEGORIES: CategoryMeta[] = [
   {
@@ -48,6 +55,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 16,
     featured: true,
+    material: "Algodón pesado",
+    finish: "Negro absoluto · Bordado Boss",
   },
   {
     slug: "playera-boss-vintage",
@@ -63,6 +72,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["M", "L", "XL"],
     stock: 8,
     featured: true,
+    material: "Algodón orgánico",
+    finish: "Lavado piedra · Bordado vintage",
   },
   {
     slug: "playera-el-vitor",
@@ -75,6 +86,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 11,
     featured: false,
+    material: "Algodón peinado",
+    finish: "Negro profundo · Impresión a mano",
   },
   {
     slug: "playera-off-white-essential",
@@ -87,6 +100,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 20,
     featured: false,
+    material: "Algodón mercerizado",
+    finish: "Blanco hueso · Cuello redondo",
   },
   {
     slug: "camisa-morada-noche",
@@ -99,6 +114,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L"],
     stock: 5,
     featured: true,
+    material: "Seda jacquard",
+    finish: "Morado profundo · Jacquard geom.",
   },
   {
     slug: "camisa-lino-obsidiana",
@@ -114,6 +131,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 12,
     featured: false,
+    material: "Lino italiano",
+    finish: "Negro tinta · Botón de hueso",
   },
   {
     slug: "camisa-oxford-espresso",
@@ -129,6 +148,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["M", "L", "XL"],
     stock: 9,
     featured: false,
+    material: "Oxford pesado",
+    finish: "Marrón espresso · Puños reforzados",
   },
   {
     slug: "pantalon-sastre-noche",
@@ -144,6 +165,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 10,
     featured: false,
+    material: "Lana fría",
+    finish: "Negro · Pinzas profundas",
   },
   {
     slug: "pantalon-cargo-utility",
@@ -159,6 +182,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 14,
     featured: false,
+    material: "Algodón ripstop",
+    finish: "Verde militar · Bolsillos cargo",
   },
   {
     slug: "pantalon-lino-bone",
@@ -174,6 +199,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["M", "L", "XL"],
     stock: 7,
     featured: false,
+    material: "Lino crudo",
+    finish: "Tono hueso · Cordón interior",
   },
   {
     slug: "hoodie-negro-heritage",
@@ -186,6 +213,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L", "XL"],
     stock: 9,
     featured: true,
+    material: "Felpa pesada",
+    finish: "Negro humo · 480 gsm",
   },
   {
     slug: "chaqueta-cuero-corsario",
@@ -201,6 +230,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["S", "M", "L"],
     stock: 4,
     featured: false,
+    material: "Piel napa",
+    finish: "Curtido vegetal · Forro oxblood",
   },
   {
     slug: "chaqueta-bomber-dorado",
@@ -216,6 +247,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["M", "L", "XL"],
     stock: 5,
     featured: false,
+    material: "Nylon italiano",
+    finish: "Dorado cepillado · Interior acolchado",
   },
   {
     slug: "cinturon-piel-hardware",
@@ -231,6 +264,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["M", "L", "XL"],
     stock: 18,
     featured: false,
+    material: "Piel vacuna",
+    finish: "Marrón espresso · Hebilla latón",
   },
   {
     slug: "gorra-revolucion",
@@ -246,6 +281,8 @@ export const PRODUCTS: Product[] = [
     sizes: ["M", "L"],
     stock: 22,
     featured: false,
+    material: "Pana negra",
+    finish: "Bordado hilo dorado · Hebilla metálica",
   },
 ];
 
@@ -276,12 +313,39 @@ export function getCategoryMeta(slug: Category): CategoryMeta | undefined {
 export function filterProducts(opts: {
   category?: Category;
   size?: Size;
+  sort?: SortKey;
 }): Product[] {
-  return PRODUCTS.filter((p) => {
+  const filtered = PRODUCTS.filter((p) => {
     if (opts.category && p.category !== opts.category) return false;
     if (opts.size && !p.sizes.includes(opts.size)) return false;
     return true;
   });
+  if (opts.sort === "precio") {
+    return [...filtered].sort((a, b) => a.price - b.price);
+  }
+  return filtered;
+}
+
+export function getCategoryCounts(): Record<Category, number> {
+  const counts = {
+    camisas: 0,
+    playeras: 0,
+    pantalones: 0,
+    chaquetas: 0,
+    accesorios: 0,
+  } satisfies Record<Category, number>;
+  for (const p of PRODUCTS) counts[p.category] += 1;
+  return counts;
+}
+
+export function deriveCardStatus(
+  stock: number,
+  featured: boolean,
+): CardStatus | null {
+  if (stock === 0) return "agotado";
+  if (stock <= 3) return "ultima";
+  if (featured && stock >= 8) return "nuevo";
+  return null;
 }
 
 export const ALL_SIZES: Size[] = ["S", "M", "L", "XL"];

@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/ui/Container";
-import { Reveal } from "@/components/ui/Reveal";
+import { Room } from "@/components/ui/Room";
+import { Hairline } from "@/components/ui/Hairline";
 import { CatalogFilters } from "@/components/filters/CatalogFilters";
-import { ProductGrid } from "@/components/product/ProductGrid";
-import { filterProducts, getCategoryMeta } from "@/lib/products";
-import type { Category, Size } from "@/lib/types";
+import { CatalogCard } from "@/components/product/CatalogCard";
+import {
+  deriveCardStatus,
+  filterProducts,
+  getCategoryMeta,
+} from "@/lib/products";
+import type { Category, Size, SortKey } from "@/lib/types";
+import styles from "./catalogo.module.css";
 
 const VALID_CATEGORIES: Category[] = [
   "camisas",
@@ -14,6 +19,7 @@ const VALID_CATEGORIES: Category[] = [
   "accesorios",
 ];
 const VALID_SIZES: Size[] = ["S", "M", "L", "XL"];
+const VALID_SORTS: SortKey[] = ["llegada", "precio"];
 
 function parseCategory(v: string | undefined): Category | undefined {
   return v && VALID_CATEGORIES.includes(v as Category)
@@ -25,8 +31,16 @@ function parseSize(v: string | undefined): Size | undefined {
   return v && VALID_SIZES.includes(v as Size) ? (v as Size) : undefined;
 }
 
+function parseSort(v: string | undefined): SortKey {
+  return v && VALID_SORTS.includes(v as SortKey) ? (v as SortKey) : "llegada";
+}
+
 interface CatalogPageProps {
-  searchParams: Promise<{ category?: string; size?: string }>;
+  searchParams: Promise<{
+    category?: string;
+    size?: string;
+    sort?: string;
+  }>;
 }
 
 export async function generateMetadata({
@@ -38,7 +52,7 @@ export async function generateMetadata({
   const title = meta ? meta.label : "Catálogo";
   const description = meta
     ? `${meta.label} de Revolución. ${meta.tagline}`
-    : "Catálogo completo de Revolución: camisas, pantalones, chaquetas y accesorios para hombre.";
+    : "Catálogo de Revolución. Pocas piezas, escogidas una por una.";
   return {
     title,
     description,
@@ -50,33 +64,47 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const sp = await searchParams;
   const category = parseCategory(sp.category);
   const size = parseSize(sp.size);
-  const products = filterProducts({ category, size });
-  const categoryMeta = category ? getCategoryMeta(category) : undefined;
+  const sort = parseSort(sp.sort);
+  const products = filterProducts({ category, size, sort });
+
+  const countLabel =
+    products.length === 1 ? "1 pieza" : `${products.length} piezas`;
 
   return (
-    <Container className="py-16 sm:py-20">
-      <Reveal>
-        <header className="mb-4 max-w-2xl">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-gold-2)] mb-3">
-            {categoryMeta ? "Categoría" : "Catálogo completo"}
+    <Room tone="ivory" id="catalogo">
+      <div className={styles.head}>
+        <CatalogFilters filteredCount={products.length} />
+      </div>
+
+      <Hairline />
+
+      {products.length === 0 ? (
+        <div className={styles.empty}>
+          <p className={styles.emptyTitle}>
+            No encontramos piezas con esos filtros.
           </p>
-          <h1 className="font-display text-5xl sm:text-6xl text-bone">
-            {categoryMeta ? categoryMeta.label : "Catálogo"}
-          </h1>
-          {categoryMeta && (
-            <p className="mt-4 text-base text-[var(--color-cream)] leading-relaxed">
-              {categoryMeta.tagline}
-            </p>
-          )}
-        </header>
-      </Reveal>
-      <CatalogFilters />
-      <Reveal delay={0.1}>
-        <p className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-muted)] mb-8">
-          {products.length} {products.length === 1 ? "pieza" : "piezas"}
-        </p>
-      </Reveal>
-      <ProductGrid products={products} columns={4} priorityCount={4} />
-    </Container>
+          <p className={styles.emptyBody}>
+            Prueba quitando alguno o explora otra categoría.
+          </p>
+        </div>
+      ) : (
+        <>
+          <p className={styles.count} aria-live="polite">
+            {countLabel}
+          </p>
+          <div className={styles.grid}>
+            {products.map((product, i) => (
+              <CatalogCard
+                key={product.slug}
+                product={product}
+                number={i + 1}
+                status={deriveCardStatus(product.stock, product.featured)}
+                priority={i < 4}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </Room>
   );
 }

@@ -2,22 +2,37 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { motion } from "motion/react";
-import { ALL_SIZES, getCategories } from "@/lib/products";
-import { cn } from "@/lib/utils";
+import {
+  ALL_SIZES,
+  getCategories,
+  getCategoryCounts,
+} from "@/lib/products";
+import type { Category, Size, SortKey } from "@/lib/types";
+import styles from "./CatalogFilters.module.css";
 
 const categories = getCategories();
+const categoryCounts = getCategoryCounts();
+const totalCount = Object.values(categoryCounts).reduce((s, n) => s + n, 0);
 
-export function CatalogFilters() {
+const SORTS: { key: SortKey; label: string }[] = [
+  { key: "llegada", label: "Llegada" },
+  { key: "precio", label: "Precio" },
+];
+
+interface CatalogFiltersProps {
+  filteredCount: number;
+}
+
+export function CatalogFilters({ filteredCount }: CatalogFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const currentCategory = searchParams.get("category");
-  const currentSize = searchParams.get("size");
-  const hasAny = Boolean(currentCategory || currentSize);
+  const currentCategory = (searchParams.get("category") ?? "") as Category | "";
+  const currentSize = (searchParams.get("size") ?? "") as Size | "";
+  const currentSort = (searchParams.get("sort") ?? "llegada") as SortKey;
 
-  const updateParam = useCallback(
+  const setParam = useCallback(
     (key: string, value: string | null) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value && params.get(key) !== value) {
@@ -31,81 +46,87 @@ export function CatalogFilters() {
     [pathname, router, searchParams],
   );
 
-  const clearAll = () => router.replace(pathname, { scroll: false });
+  const categoryOptionCount = (slug: Category | "") =>
+    slug === "" ? (currentCategory === "" ? filteredCount : totalCount) : categoryCounts[slug];
 
   return (
-    <div className="border-y border-[var(--color-border-soft)] py-6 mb-12 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      <div className="flex flex-wrap gap-x-2 gap-y-3 items-center">
-        <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-muted)] mr-2">
-          Categoría
-        </span>
-        {categories.map((c) => {
-          const active = currentCategory === c.slug;
-          return (
-            <motion.button
-              key={c.slug}
-              type="button"
-              onClick={() =>
-                updateParam("category", active ? null : c.slug)
-              }
-              whileTap={{ scale: 0.94 }}
-              className={cn(
-                "relative h-8 px-3 text-[11px] uppercase tracking-[0.16em] rounded-sm border transition-colors cursor-pointer",
-                active
-                  ? "border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold)]/10"
-                  : "border-[var(--color-border-soft)] text-[var(--color-cream)] hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]",
-              )}
-              aria-pressed={active}
-            >
-              {c.label}
-              {active && (
-                <motion.span
-                  layoutId="category-underline"
-                  className="absolute left-2 right-2 -bottom-[3px] h-[2px] bg-[var(--color-gold)] rounded-full"
-                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                />
-              )}
-            </motion.button>
-          );
-        })}
-      </div>
-
-      <div className="flex flex-wrap gap-x-2 gap-y-3 items-center">
-        <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-muted)] mr-2">
-          Talla
-        </span>
-        {ALL_SIZES.map((s) => {
-          const active = currentSize === s;
-          return (
-            <motion.button
-              key={s}
-              type="button"
-              onClick={() =>
-                updateParam("size", active ? null : s)
-              }
-              whileTap={{ scale: 0.94 }}
-              className={cn(
-                "h-8 min-w-9 px-2 text-[11px] uppercase tracking-[0.16em] rounded-sm border transition-colors cursor-pointer",
-                active
-                  ? "border-[var(--color-bone)] bg-[var(--color-bone)] text-[var(--color-obsidian)]"
-                  : "border-[var(--color-border-soft)] text-[var(--color-cream)] hover:border-[var(--color-bone)]",
-              )}
-              aria-pressed={active}
-            >
-              {s}
-            </motion.button>
-          );
-        })}
-
-        {hasAny && (
+    <div className={styles.bar}>
+      <div className={`${styles.row} ${styles.rowSplit}`}>
+        <div className={styles.group}>
+          <span className={styles.label}>Categoría</span>
           <button
             type="button"
-            onClick={clearAll}
-            className="ml-2 text-[11px] uppercase tracking-[0.18em] text-[var(--color-muted)] hover:text-[var(--color-oxblood-2)] cursor-pointer"
+            className={`${styles.option} ${currentCategory === "" ? styles.optionActive : ""}`}
+            onClick={() => setParam("category", null)}
+            aria-pressed={currentCategory === ""}
           >
-            Limpiar
+            <span>Todo</span>
+            <span className={styles.count}>· {String(categoryOptionCount("")).padStart(2, "0")}</span>
           </button>
-        )}
+          {categories.map((c) => {
+            const active = currentCategory === c.slug;
+            return (
+              <button
+                key={c.slug}
+                type="button"
+                className={`${styles.option} ${active ? styles.optionActive : ""}`}
+                onClick={() => setParam("category", active ? null : c.slug)}
+                aria-pressed={active}
+              >
+                <span>{c.label}</span>
+                <span className={styles.count}>
+                  · {String(categoryCounts[c.slug]).padStart(2, "0")}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className={styles.group}>
+          <span className={styles.label}>Talla</span>
+          <button
+            type="button"
+            className={`${styles.option} ${currentSize === "" ? styles.optionActive : ""}`}
+            onClick={() => setParam("size", null)}
+            aria-pressed={currentSize === ""}
+          >
+            <span>Todo</span>
+          </button>
+          {ALL_SIZES.map((s) => {
+            const active = currentSize === s;
+            return (
+              <button
+                key={s}
+                type="button"
+                className={`${styles.option} ${active ? styles.optionActive : ""}`}
+                onClick={() => setParam("size", active ? null : s)}
+                aria-pressed={active}
+              >
+                <span>{s}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.group}>
+          <span className={styles.label}>Orden</span>
+          {SORTS.map(({ key, label }) => {
+            const active = currentSort === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                className={`${styles.option} ${active ? styles.optionActive : ""}`}
+                onClick={() => setParam("sort", key === "llegada" ? null : key)}
+                aria-pressed={active}
+              >
+                <span>{label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,87 @@
+.bar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: clamp(16px, 2vw, 24px) 0 clamp(20px, 3vw, 32px);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 24px 36px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--smoke);
+}
+
+.rowSplit {
+  justify-content: space-between;
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 14px 22px;
+}
+
+.label {
+  color: var(--smoke);
+  margin-right: 6px;
+}
+
+.option {
+  position: relative;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 4px 0;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  transition: color 0.3s ease;
+}
+
+.option::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--bronze);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--hairline-dur) var(--ease);
+}
+
+.option:hover {
+  color: var(--bronze);
+}
+
+.optionActive {
+  color: var(--bronze);
+}
+
+.optionActive::after {
+  transform: scaleX(1);
+}
+
+.count {
+  font-size: 10px;
+  color: var(--smoke);
+  letter-spacing: 0.18em;
+}
+
+.optionActive .count {
+  color: var(--bronze);
+}

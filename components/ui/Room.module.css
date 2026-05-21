@@ -1,0 +1,43 @@
+.room {
+  padding-block: var(--room-pad-y);
+  padding-inline: var(--gutter);
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 920px;
+  margin: 0 auto clamp(48px, 7vw, 96px);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 380;
+  font-size: clamp(28px, 3.6vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  margin: 12px 0 0;
+  text-wrap: balance;
+  color: var(--ink);
+}
+
+.lede {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 52ch;
+  margin: 18px 0 0;
+  text-wrap: pretty;
+}

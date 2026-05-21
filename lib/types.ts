@@ -17,7 +17,13 @@ export interface Product {
   sizes: Size[];
   stock: number;
   featured: boolean;
+  material?: string;
+  finish?: string;
 }
+
+export type SortKey = "llegada" | "precio";
+
+export type CardStatus = "agotado" | "ultima" | "nuevo";
 
 export interface CartItem {
   slug: string;

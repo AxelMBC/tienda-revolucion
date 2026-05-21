@@ -1,0 +1,153 @@
+.card {
+  position: relative;
+  display: block;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  background: var(--bone);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(10, 10, 10, 0.04);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.img {
+  object-fit: cover;
+  transition: transform var(--hover-dur) var(--ease), filter 1.2s ease;
+  filter: saturate(0.92) contrast(1.02);
+}
+
+.card:hover .img,
+.card:focus-visible .img {
+  transform: scale(1.03);
+  filter: saturate(1);
+}
+
+.number {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bronze);
+}
+
+.badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  padding: 5px 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.badgeUltima {
+  background: var(--bronze);
+  color: var(--ivory);
+}
+
+.badgeAgotado {
+  background: var(--onyx);
+  color: var(--ivory);
+  opacity: 0.92;
+}
+
+.badgeNuevo {
+  background: var(--onyx);
+  color: var(--ivory);
+}
+
+.body {
+  padding-top: 16px;
+  border-top: 1px solid rgba(10, 10, 10, 0.12);
+  margin-top: 18px;
+}
+
+.caption {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  margin: 0;
+}
+
+.captionCategory {
+  color: var(--ink);
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 380;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  margin: 10px 0 0;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.finish {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  margin: 12px 0 0;
+  line-height: 1.5;
+  max-width: 32ch;
+}
+
+.foot {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  margin-top: 16px;
+}
+
+.price {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--bronze);
+  margin: 0;
+}
+
+.sizes {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img {
+    transition: none;
+  }
+  .card:hover .img,
+  .card:focus-visible .img {
+    transform: none;
+  }
+}
