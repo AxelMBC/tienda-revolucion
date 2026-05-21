@@ -1,10 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
+import { useRef } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
   const reduce = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const parallaxOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
 
   const container = {
     hidden: {},
@@ -15,15 +31,33 @@ export function Hero() {
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] as const },
+      transition: { duration: reduce ? 0 : 0.8, ease: EASE },
     },
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-[var(--color-border-soft)]">
-      <div
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden border-b border-[var(--color-border-soft)]"
+    >
+      <motion.div
         aria-hidden
+        style={reduce ? undefined : { y: parallaxY, opacity: parallaxOpacity }}
         className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_rgba(184,137,59,0.10),_transparent_55%),radial-gradient(ellipse_at_bottom_left,_rgba(107,15,23,0.18),_transparent_60%)]"
+        animate={
+          reduce
+            ? undefined
+            : { opacity: [0.85, 1, 0.85] }
+        }
+        transition={
+          reduce
+            ? undefined
+            : {
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }
+        }
       />
       <div
         aria-hidden

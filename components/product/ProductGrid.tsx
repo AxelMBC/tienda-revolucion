@@ -51,7 +51,8 @@ export function ProductGrid({
       className={`grid gap-x-6 gap-y-12 ${colsClass}`}
       variants={container}
       initial="hidden"
-      animate="show"
+      whileInView="show"
+      viewport={{ once: false, amount: 0.15 }}
     >
       {products.map((p, idx) => (
         <motion.li key={p.slug} variants={item}>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Container } from "@/components/ui/Container";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { useCart, useCartCount } from "@/lib/cart-store";
@@ -9,6 +10,8 @@ import { useHasMounted } from "@/lib/use-has-mounted";
 import { getCategories } from "@/lib/products";
 import { MobileNav } from "./MobileNav";
 import { cn } from "@/lib/utils";
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 const categories = getCategories();
 
@@ -18,10 +21,16 @@ export function Header() {
   const openCart = useCart((s) => s.open);
   const [catOpen, setCatOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const reduce = useReducedMotion();
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[var(--color-border-soft)] bg-[var(--color-obsidian)]/85 backdrop-blur-md">
+      <motion.header
+        initial={reduce ? false : { y: -16, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: EASE }}
+        className="sticky top-0 z-40 border-b border-[var(--color-border-soft)] bg-[var(--color-obsidian)]/85 backdrop-blur-md"
+      >
         <Container>
           <div className="flex h-16 items-center justify-between gap-4">
             {/* Mobile hamburger */}
@@ -132,18 +141,25 @@ export function Header() {
                 <circle cx="9" cy="19" r="1.2" fill="currentColor" />
                 <circle cx="16" cy="19" r="1.2" fill="currentColor" />
               </svg>
-              {mounted && count > 0 && (
-                <span
-                  className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-[var(--color-oxblood)] text-[10px] font-semibold text-bone tracking-normal"
-                  aria-label={`${count} artículos en el carrito`}
-                >
-                  {count}
-                </span>
-              )}
+              <AnimatePresence>
+                {mounted && count > 0 && (
+                  <motion.span
+                    key={count}
+                    initial={reduce ? false : { scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={reduce ? undefined : { scale: 0.5, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 22 }}
+                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 inline-flex items-center justify-center rounded-full bg-[var(--color-oxblood)] text-[10px] font-semibold text-bone tracking-normal"
+                    aria-label={`${count} artículos en el carrito`}
+                  >
+                    {count}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
         </Container>
-      </header>
+      </motion.header>
       <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>
   );

@@ -2,22 +2,28 @@ import type { Category, CategoryMeta, Product, Size } from "./types";
 
 const CATEGORIES: CategoryMeta[] = [
   {
+    slug: "playeras",
+    label: "Playeras",
+    cover: "/Products/playera-elVitor.png",
+    tagline: "Gráficas de autor, algodón con peso.",
+  },
+  {
     slug: "camisas",
     label: "Camisas",
-    cover: "/images/categories/camisas.svg",
+    cover: "/Products/camisa-morada.png",
     tagline: "Cortes sastreros, telas que respiran.",
+  },
+  {
+    slug: "chaquetas",
+    label: "Chaquetas",
+    cover: "/Products/hoodie.png",
+    tagline: "Capas que cuentan historia.",
   },
   {
     slug: "pantalones",
     label: "Pantalones",
     cover: "/images/categories/pantalones.svg",
     tagline: "Sastrería urbana, presencia diaria.",
-  },
-  {
-    slug: "chaquetas",
-    label: "Chaquetas",
-    cover: "/images/categories/chaquetas.svg",
-    tagline: "Capas que cuentan historia.",
   },
   {
     slug: "accesorios",
@@ -28,6 +34,72 @@ const CATEGORIES: CategoryMeta[] = [
 ];
 
 export const PRODUCTS: Product[] = [
+  {
+    slug: "playera-boss-heritage",
+    name: "Playera Boss Heritage",
+    description:
+      "Algodón pesado en negro absoluto. Gráfica Boss bordada al frente. Corte recto, cuello reforzado. Una pieza diaria con presencia.",
+    price: 890,
+    images: [
+      "/Products/playera-boss.png",
+      "/Products/playera-boss1.png",
+    ],
+    category: "playeras",
+    sizes: ["S", "M", "L", "XL"],
+    stock: 16,
+    featured: true,
+  },
+  {
+    slug: "playera-boss-vintage",
+    name: "Playera Boss Vintage",
+    description:
+      "Edición lavada en algodón orgánico. Bordado vintage al pecho, costuras envejecidas a mano. Lote corto.",
+    price: 990,
+    images: [
+      "/Products/playera-boss-2.png",
+      "/Products/playera-boss3.png",
+    ],
+    category: "playeras",
+    sizes: ["M", "L", "XL"],
+    stock: 8,
+    featured: true,
+  },
+  {
+    slug: "playera-el-vitor",
+    name: "Playera El Vitor",
+    description:
+      "Gráfica de autor en algodón peinado. Negro profundo, impresión a mano. Colaboración limitada.",
+    price: 790,
+    images: ["/Products/playera-elVitor.png"],
+    category: "playeras",
+    sizes: ["S", "M", "L", "XL"],
+    stock: 11,
+    featured: false,
+  },
+  {
+    slug: "playera-off-white-essential",
+    name: "Playera Off White Essential",
+    description:
+      "Blanco hueso, algodón mercerizado. Cuello redondo limpio, cae suelta sin perder forma. La base del uniforme.",
+    price: 690,
+    images: ["/Products/playera-offWhite.png"],
+    category: "playeras",
+    sizes: ["S", "M", "L", "XL"],
+    stock: 20,
+    featured: false,
+  },
+  {
+    slug: "camisa-morada-noche",
+    name: "Camisa Morada Noche",
+    description:
+      "Camisa en morado profundo, tejido satinado con caída pesada. Cuello cubano abierto, botonadura discreta. Pieza de noche con presencia inequívoca.",
+    price: 2290,
+    images: ["/Products/camisa-morada.png"],
+    category: "camisas",
+    sizes: ["S", "M", "L"],
+    stock: 5,
+    featured: true,
+  },
   {
     slug: "camisa-lino-obsidiana",
     name: "Camisa Lino Obsidiana",
@@ -41,22 +113,7 @@ export const PRODUCTS: Product[] = [
     category: "camisas",
     sizes: ["S", "M", "L", "XL"],
     stock: 12,
-    featured: true,
-  },
-  {
-    slug: "camisa-seda-oxblood",
-    name: "Camisa Seda Oxblood",
-    description:
-      "Seda lavada en color sangre seca. Caída pesada, cuello cubano abierto. Pieza de noche con presencia inequívoca.",
-    price: 2290,
-    images: [
-      "/images/products/camisa-seda-oxblood-1.svg",
-      "/images/products/camisa-seda-oxblood-2.svg",
-    ],
-    category: "camisas",
-    sizes: ["S", "M", "L"],
-    stock: 6,
-    featured: true,
+    featured: false,
   },
   {
     slug: "camisa-oxford-espresso",
@@ -86,7 +143,7 @@ export const PRODUCTS: Product[] = [
     category: "pantalones",
     sizes: ["S", "M", "L", "XL"],
     stock: 10,
-    featured: true,
+    featured: false,
   },
   {
     slug: "pantalon-cargo-utility",
@@ -119,6 +176,18 @@ export const PRODUCTS: Product[] = [
     featured: false,
   },
   {
+    slug: "hoodie-negro-heritage",
+    name: "Hoodie Negro Heritage",
+    description:
+      "Felpa pesada en negro absoluto, forro interior cepillado. Capucha estructurada con cordón de algodón crudo. La capa diaria para los meses fríos.",
+    price: 1690,
+    images: ["/Products/hoodie.png"],
+    category: "chaquetas",
+    sizes: ["S", "M", "L", "XL"],
+    stock: 9,
+    featured: true,
+  },
+  {
     slug: "chaqueta-cuero-corsario",
     name: "Chaqueta Cuero Corsario",
     description:
@@ -131,7 +200,7 @@ export const PRODUCTS: Product[] = [
     category: "chaquetas",
     sizes: ["S", "M", "L"],
     stock: 4,
-    featured: true,
+    featured: false,
   },
   {
     slug: "chaqueta-bomber-dorado",

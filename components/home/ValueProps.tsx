@@ -1,4 +1,5 @@
 import { Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/ui/Reveal";
 
 const PROPS = [
   {
@@ -24,17 +25,19 @@ export function ValueProps() {
       <Container>
         <div className="grid gap-10 sm:grid-cols-3">
           {PROPS.map((p, i) => (
-            <div key={p.title} className="relative">
-              <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--color-gold-2)] mb-3">
-                {String(i + 1).padStart(2, "0")}
+            <Reveal key={p.title} delay={i * 0.1}>
+              <div className="relative">
+                <div className="text-[11px] uppercase tracking-[0.22em] text-[var(--color-gold-2)] mb-3">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <h3 className="font-display text-2xl text-bone mb-3">
+                  {p.title}
+                </h3>
+                <p className="text-sm text-[var(--color-cream)] leading-relaxed max-w-xs">
+                  {p.body}
+                </p>
               </div>
-              <h3 className="font-display text-2xl text-bone mb-3">
-                {p.title}
-              </h3>
-              <p className="text-sm text-[var(--color-cream)] leading-relaxed max-w-xs">
-                {p.body}
-              </p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Container>

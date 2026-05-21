@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/ui/Reveal";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { getCategories } from "@/lib/products";
 import { getWhatsAppContactUrl } from "@/lib/whatsapp";
@@ -12,7 +13,8 @@ export function Footer() {
   return (
     <footer className="mt-24 border-t border-[var(--color-border-soft)] bg-[var(--color-obsidian-2)]">
       <Container className="py-14">
-        <div className="grid gap-10 md:grid-cols-3">
+        <Reveal>
+          <div className="grid gap-10 md:grid-cols-3">
           <div>
             <Wordmark size="md" />
             <p className="mt-4 text-sm text-[var(--color-muted)] max-w-xs leading-relaxed">
@@ -76,15 +78,18 @@ export function Footer() {
             </ul>
           </div>
         </div>
+        </Reveal>
 
-        <div className="mt-12 pt-6 border-t border-[var(--color-border-soft)] text-xs text-[var(--color-muted)] flex flex-col sm:flex-row sm:justify-between gap-2">
-          <span>
-            © {year} REVOLUCIÓN. Todos los derechos reservados.
-          </span>
-          <span className="tracking-[0.18em] uppercase text-[10px]">
-            Hecho en México
-          </span>
-        </div>
+        <Reveal delay={0.1}>
+          <div className="mt-12 pt-6 border-t border-[var(--color-border-soft)] text-xs text-[var(--color-muted)] flex flex-col sm:flex-row sm:justify-between gap-2">
+            <span>
+              © {year} REVOLUCIÓN. Todos los derechos reservados.
+            </span>
+            <span className="tracking-[0.18em] uppercase text-[10px]">
+              Hecho en México
+            </span>
+          </div>
+        </Reveal>
       </Container>
     </footer>
   );

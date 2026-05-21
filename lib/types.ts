@@ -2,6 +2,7 @@ export type Size = "S" | "M" | "L" | "XL";
 
 export type Category =
   | "camisas"
+  | "playeras"
   | "pantalones"
   | "chaquetas"
   | "accesorios";

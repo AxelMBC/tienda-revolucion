@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { motion } from "motion/react";
 import { ALL_SIZES, getCategories } from "@/lib/products";
 import { cn } from "@/lib/utils";
 
@@ -38,48 +39,63 @@ export function CatalogFilters() {
         <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-muted)] mr-2">
           Categoría
         </span>
-        {categories.map((c) => (
-          <button
-            key={c.slug}
-            type="button"
-            onClick={() =>
-              updateParam("category", currentCategory === c.slug ? null : c.slug)
-            }
-            className={cn(
-              "h-8 px-3 text-[11px] uppercase tracking-[0.16em] rounded-sm border transition-colors cursor-pointer",
-              currentCategory === c.slug
-                ? "border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold)]/10"
-                : "border-[var(--color-border-soft)] text-[var(--color-cream)] hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]",
-            )}
-            aria-pressed={currentCategory === c.slug}
-          >
-            {c.label}
-          </button>
-        ))}
+        {categories.map((c) => {
+          const active = currentCategory === c.slug;
+          return (
+            <motion.button
+              key={c.slug}
+              type="button"
+              onClick={() =>
+                updateParam("category", active ? null : c.slug)
+              }
+              whileTap={{ scale: 0.94 }}
+              className={cn(
+                "relative h-8 px-3 text-[11px] uppercase tracking-[0.16em] rounded-sm border transition-colors cursor-pointer",
+                active
+                  ? "border-[var(--color-gold)] text-[var(--color-gold)] bg-[var(--color-gold)]/10"
+                  : "border-[var(--color-border-soft)] text-[var(--color-cream)] hover:border-[var(--color-gold)] hover:text-[var(--color-gold)]",
+              )}
+              aria-pressed={active}
+            >
+              {c.label}
+              {active && (
+                <motion.span
+                  layoutId="category-underline"
+                  className="absolute left-2 right-2 -bottom-[3px] h-[2px] bg-[var(--color-gold)] rounded-full"
+                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                />
+              )}
+            </motion.button>
+          );
+        })}
       </div>
 
       <div className="flex flex-wrap gap-x-2 gap-y-3 items-center">
         <span className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-muted)] mr-2">
           Talla
         </span>
-        {ALL_SIZES.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() =>
-              updateParam("size", currentSize === s ? null : s)
-            }
-            className={cn(
-              "h-8 min-w-9 px-2 text-[11px] uppercase tracking-[0.16em] rounded-sm border transition-colors cursor-pointer",
-              currentSize === s
-                ? "border-[var(--color-bone)] bg-[var(--color-bone)] text-[var(--color-obsidian)]"
-                : "border-[var(--color-border-soft)] text-[var(--color-cream)] hover:border-[var(--color-bone)]",
-            )}
-            aria-pressed={currentSize === s}
-          >
-            {s}
-          </button>
-        ))}
+        {ALL_SIZES.map((s) => {
+          const active = currentSize === s;
+          return (
+            <motion.button
+              key={s}
+              type="button"
+              onClick={() =>
+                updateParam("size", active ? null : s)
+              }
+              whileTap={{ scale: 0.94 }}
+              className={cn(
+                "h-8 min-w-9 px-2 text-[11px] uppercase tracking-[0.16em] rounded-sm border transition-colors cursor-pointer",
+                active
+                  ? "border-[var(--color-bone)] bg-[var(--color-bone)] text-[var(--color-obsidian)]"
+                  : "border-[var(--color-border-soft)] text-[var(--color-cream)] hover:border-[var(--color-bone)]",
+              )}
+              aria-pressed={active}
+            >
+              {s}
+            </motion.button>
+          );
+        })}
 
         {hasAny && (
           <button

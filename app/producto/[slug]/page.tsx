@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/ui/Reveal";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductPurchasePanel } from "@/components/product/ProductPurchasePanel";
 import { PRODUCTS, getBySlug } from "@/lib/products";
@@ -87,8 +88,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-        <ProductGallery images={product.images} alt={product.name} />
-        <ProductPurchasePanel product={product} />
+        <Reveal y={20}>
+          <ProductGallery images={product.images} alt={product.name} />
+        </Reveal>
+        <Reveal y={20} delay={0.15}>
+          <ProductPurchasePanel product={product} />
+        </Reveal>
       </div>
     </Container>
   );
