@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { getCategories } from "@/lib/products";
 import { Wordmark } from "@/components/ui/Wordmark";
-
-const categories = getCategories();
 
 interface MobileNavProps {
   open: boolean;
@@ -84,19 +81,13 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
               >
                 Catálogo
               </Link>
-              <div className="pt-6 pb-2 text-[10px] tracking-[0.22em] text-[var(--color-muted)]">
-                Categorías
-              </div>
-              {categories.map((c) => (
-                <Link
-                  key={c.slug}
-                  href={`/catalogo?category=${c.slug}`}
-                  onClick={onClose}
-                  className="block py-3 border-b border-[var(--color-border-soft)] text-[var(--color-cream)] hover:text-[var(--color-gold)]"
-                >
-                  {c.label}
-                </Link>
-              ))}
+              <Link
+                href="/ofertas"
+                onClick={onClose}
+                className="block py-3 border-b border-[var(--color-border-soft)] text-[var(--color-bone)] hover:text-[var(--color-gold)]"
+              >
+                Ofertas
+              </Link>
             </nav>
           </motion.aside>
         </div>

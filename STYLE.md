@@ -16,10 +16,10 @@ fashion brand. Spanish is the primary language. No marketing voice. No
 emojis. No exclamation marks. No words like "discover," "unlock," "elevate,"
 "curated," "exclusive," "experience."
 
-Good: *"Una tienda pequeña en el centro de Tepic. Ropa para hombre, escogida
-una por una."*
+Good: _"Una tienda pequeña en el centro de Tepic. Ropa para hombre, escogida
+una por una."_
 
-Bad: *"Discover our curated collection of exclusive menswear!"*
+Bad: _"Discover our curated collection of exclusive menswear!"_
 
 ---
 
@@ -39,9 +39,10 @@ single subtle hero veil for legibility. No semi-transparent color tints
 except for hairlines and overlays on imagery.
 
 **Pairing rules:**
+
 - Bronze is an accent only. Never a button fill, never a body color. Use
   for hairlines, the dot in the wordmark, item numbers, single inline marks.
-- Oxblood is a *room* color, not a UI color. Whole sections may use it as
+- Oxblood is a _room_ color, not a UI color. Whole sections may use it as
   background; never use it for type, borders, or buttons in light rooms.
 
 ---
@@ -58,16 +59,16 @@ Three families, loaded via `next/font/google`. See `fonts.md`.
 
 ### Scale
 
-| Use                  | Family   | Size                                | Weight | Style   | Notes                  |
-| -------------------- | -------- | ----------------------------------- | ------ | ------- | ---------------------- |
-| Hero display         | serif    | `clamp(64px, 11vw, 168px)`          | 380    | italic  | line-height 0.92       |
-| Section head         | serif    | `clamp(28px, 3.6vw, 44px)`          | 380    | italic  | line-height 1.1        |
-| Piece title          | serif    | `clamp(22px, 2.2vw, 30px)`          | 380    | italic  | letter-spacing -0.012em|
-| Lede                 | serif    | `clamp(22px, 2.4vw, 30px)`          | 380    | italic  | balance, max 36ch      |
-| Body                 | sans     | 15–17px                             | 300    | roman   | line-height 1.6–1.75   |
-| UI label             | sans     | 13px                                | 400    | roman   | letter-spacing 0.04em  |
-| Eyebrow / caption    | mono     | 10–11px                             | 400    | roman   | UPPERCASE 0.18–0.22em  |
-| Number / coordinate  | mono     | 10–12px                             | 400    | roman   | 0.14–0.22em tracking   |
+| Use                 | Family | Size                       | Weight | Style  | Notes                   |
+| ------------------- | ------ | -------------------------- | ------ | ------ | ----------------------- |
+| Hero display        | serif  | `clamp(64px, 11vw, 168px)` | 380    | italic | line-height 0.92        |
+| Section head        | serif  | `clamp(28px, 3.6vw, 44px)` | 380    | italic | line-height 1.1         |
+| Piece title         | serif  | `clamp(22px, 2.2vw, 30px)` | 380    | italic | letter-spacing -0.012em |
+| Lede                | serif  | `clamp(22px, 2.4vw, 30px)` | 380    | italic | balance, max 36ch       |
+| Body                | sans   | 15–17px                    | 300    | roman  | line-height 1.6–1.75    |
+| UI label            | sans   | 13px                       | 400    | roman  | letter-spacing 0.04em   |
+| Eyebrow / caption   | mono   | 10–11px                    | 400    | roman  | UPPERCASE 0.18–0.22em   |
+| Number / coordinate | mono   | 10–12px                    | 400    | roman  | 0.14–0.22em tracking    |
 
 Body weight is **300, not 400.** This is non-negotiable — heavier body type
 breaks the editorial feel.

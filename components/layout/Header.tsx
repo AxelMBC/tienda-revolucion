@@ -8,19 +8,15 @@ import { Container } from "@/components/ui/Container";
 import { Wordmark } from "@/components/ui/Wordmark";
 import { useCart, useCartCount } from "@/lib/cart-store";
 import { useHasMounted } from "@/lib/use-has-mounted";
-import { getCategories } from "@/lib/products";
 import { MobileNav } from "./MobileNav";
 import { cn } from "@/lib/utils";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-const categories = getCategories();
-
 export function Header() {
   const mounted = useHasMounted();
   const count = useCartCount();
   const openCart = useCart((s) => s.open);
-  const [catOpen, setCatOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const reduce = useReducedMotion();
   const pathname = usePathname();
@@ -91,44 +87,13 @@ export function Header() {
               >
                 catálogo
               </Link>
-              <div
-                className="relative"
-                onMouseEnter={() => setCatOpen(true)}
-                onMouseLeave={() => setCatOpen(false)}
+              <Link
+                href="/ofertas"
+                className="hover:text-[var(--ivory)] transition-colors"
+                style={{ letterSpacing: "0.04em" }}
               >
-                <button
-                  type="button"
-                  className="hover:text-[var(--ivory)] transition-colors cursor-pointer"
-                  style={{ letterSpacing: "0.04em" }}
-                  onFocus={() => setCatOpen(true)}
-                  aria-expanded={catOpen}
-                  aria-haspopup="true"
-                >
-                  categorías
-                </button>
-                <div
-                  className={cn(
-                    "absolute left-1/2 -translate-x-1/2 top-full pt-3 transition-opacity duration-150",
-                    catOpen
-                      ? "opacity-100 pointer-events-auto"
-                      : "opacity-0 pointer-events-none",
-                  )}
-                >
-                  <div className="min-w-[200px] border border-[rgba(245,241,234,0.14)] bg-[rgba(10,10,10,0.92)] backdrop-blur-md py-2">
-                    {categories.map((c) => (
-                      <Link
-                        key={c.slug}
-                        href={`/catalogo?category=${c.slug}`}
-                        className="block px-4 py-2 text-[13px] lowercase text-[rgba(245,241,234,0.7)] hover:text-[var(--ivory)] transition-colors"
-                        style={{ letterSpacing: "0.04em" }}
-                        onClick={() => setCatOpen(false)}
-                      >
-                        {c.label.toLowerCase()}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
+                ofertas
+              </Link>
             </nav>
 
             {/* Cart icon */}

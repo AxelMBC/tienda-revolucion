@@ -1,10 +1,4 @@
-// Eyebrow.tsx
-// The small uppercase mono label above every section heading.
-//
-// Usage:
-//   <Eyebrow>Las piezas · Selección OI 26</Eyebrow>
-
-import styles from './components.module.css';
+import styles from "./components.module.css";
 
 type Props = {
   children: React.ReactNode;

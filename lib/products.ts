@@ -785,6 +785,14 @@ export function getFeatured(): Product[] {
   return PRODUCTS.filter((p) => p.featured);
 }
 
+/**
+ * The buyer's current selection — "Ofertas" in the shop's language is a
+ * hand-picked editorial bench, not a discount list. Order is intentional.
+ */
+export function getPicks(): Product[] {
+  return PRODUCTS.filter((p) => p.featured);
+}
+
 export function getBySlug(slug: string): Product | undefined {
   return PRODUCTS.find((p) => p.slug === slug);
 }
