@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Category {
+  camisas
+  playeras
+  pantalones
+  chaquetas
+  accesorios
+}
+
+enum Size {
+  S
+  M
+  L
+  XL
+  XXL
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  description String
+  price       Int
+  category    Category
+  featured    Boolean  @default(false)
+  status      String?
+  edition     String?
+  material    String?
+  finish      String?
+  lede        String?
+  images      String[]
+  imageLabels String[]
+  specs       Json?
+  shipping    Json?
+  story       Json?
+  quote       Json?
+  variants    ProductVariant[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+}
+
+model ProductVariant {
+  id        String  @id @default(cuid())
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  size      Size
+  stock     Int     @default(0)
+  isDefault Boolean @default(false)
+
+  @@unique([productId, size])
+  @@index([productId])
+}

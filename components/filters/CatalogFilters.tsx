@@ -2,11 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import {
-  ALL_SIZES,
-  getCategories,
-  getCategoryCounts,
-} from "@/lib/products";
+import { ALL_SIZES, getCategories, getCategoryCounts } from "@/lib/products";
 import type { Category, Size, SortKey } from "@/lib/types";
 import styles from "./CatalogFilters.module.css";
 
@@ -47,7 +43,11 @@ export function CatalogFilters({ filteredCount }: CatalogFiltersProps) {
   );
 
   const categoryOptionCount = (slug: Category | "") =>
-    slug === "" ? (currentCategory === "" ? filteredCount : totalCount) : categoryCounts[slug];
+    slug === ""
+      ? currentCategory === ""
+        ? filteredCount
+        : totalCount
+      : categoryCounts[slug];
 
   return (
     <div className={styles.bar}>
@@ -61,7 +61,9 @@ export function CatalogFilters({ filteredCount }: CatalogFiltersProps) {
             aria-pressed={currentCategory === ""}
           >
             <span>Todo</span>
-            <span className={styles.count}>· {String(categoryOptionCount("")).padStart(2, "0")}</span>
+            <span className={styles.count}>
+              · {String(categoryOptionCount("")).padStart(2, "0")}
+            </span>
           </button>
           {categories.map((c) => {
             const active = currentCategory === c.slug;
@@ -103,26 +105,6 @@ export function CatalogFilters({ filteredCount }: CatalogFiltersProps) {
                 aria-pressed={active}
               >
                 <span>{s}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className={styles.row}>
-        <div className={styles.group}>
-          <span className={styles.label}>Orden</span>
-          {SORTS.map(({ key, label }) => {
-            const active = currentSort === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                className={`${styles.option} ${active ? styles.optionActive : ""}`}
-                onClick={() => setParam("sort", key === "llegada" ? null : key)}
-                aria-pressed={active}
-              >
-                <span>{label}</span>
               </button>
             );
           })}
