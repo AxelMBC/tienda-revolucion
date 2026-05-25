@@ -24,6 +24,8 @@ No separate Express service.
 
 ## Progress (as of 2026-05-24)
 
+Working branch: `feat/backend-prep` (uncommitted).
+
 | § | Section                          | Status        |
 |---|----------------------------------|---------------|
 | 1 | Local Postgres in Docker         | **DONE** (host port remapped to `5433` — see note) |
@@ -31,13 +33,30 @@ No separate Express service.
 | 3 | Install Prisma and friends       | **DONE** (on Prisma **v7.8** — see deviations) |
 | 4 | Environment variables            | **PARTIAL** (DB URLs filled; `ADMIN_PASSWORD_HASH` / `ADMIN_SESSION_SECRET` still empty; `.env.example` not yet mirrored) |
 | 5 | Schema + first migration         | **DONE** (`init` migration applied; `lib/generated/prisma/` client generated) |
-| 6 | Prisma client singleton          | TODO          |
-| 7 | Seed from existing catalog       | TODO          |
-| 8 | Admin auth                       | TODO          |
-| 9 | Validation layer                 | TODO          |
-| 10| Minimal API surface              | TODO          |
-| 11| Verification checklist           | partial — see updated checkboxes |
+| 6 | Prisma client singleton          | **DONE** (`lib/prisma.ts`; uses `@prisma/adapter-pg` — see deviation 5) |
+| 7 | Seed from existing catalog       | **DONE** (15 products upserted; seed config in `prisma.config.ts` per v7 — see deviation 7) |
+| 8 | Admin auth                       | TODO (Batch B) |
+| 9 | Validation layer                 | **DONE** (`lib/schemas.ts`; adds `ProductListQuery` on top of doc's set) |
+| 10| Minimal API surface              | **PARTIAL** (`GET /api/products`, `GET /api/products/[slug]` shipped + verified; admin login/logout + write routes still TODO in Batch B) |
+| 11| Verification checklist           | partial — read-path boxes ticked; admin-path boxes still open |
 | 12| Things deferred                  | reference only |
+
+### What's left (Batch B)
+
+- **§8** — `bcryptjs` + `jose` installed; `lib/auth.ts` with
+  `verifyPassword` / `signSession` / `verifySession`; `middleware.ts`
+  at repo root gating `/admin/*` and `/api/admin/*`; fill
+  `ADMIN_PASSWORD_HASH` and `ADMIN_SESSION_SECRET` in `.env.local`
+  (user-generated — see §8 prose).
+- **§10 admin routes** — `POST /api/admin/login`, `POST /api/admin/logout`,
+  `POST /api/admin/products`, `PATCH /api/admin/products/[slug]`,
+  `DELETE /api/admin/products/[slug]`. Each write calls
+  `revalidateTag("products")` / `revalidatePath("/catalogo")` on success.
+- **Loose ends** — mirror all four backend keys (`DATABASE_URL`,
+  `DIRECT_URL`, `ADMIN_PASSWORD_HASH`, `ADMIN_SESSION_SECRET`) into
+  `.env.example`. Run `migrate deploy` + seed once against Supabase
+  with prod env vars loaded. Confirm `yarn build` still passes
+  end-to-end with everything wired.
 
 ### Prisma v7 deviations from this doc (which was written v6-shaped)
 
@@ -61,6 +80,34 @@ forced us to do something different. Apply them when you tackle §6+.
 4. **`prisma generate` is a separate step** after `migrate dev`. The v7
    generator does not auto-run on migrations the way `prisma-client-js`
    did. Add it to the seed and build scripts when wiring §7.
+5. **`PrismaClient` requires a driver adapter at runtime.** v7 made
+   `adapter` / `accelerateUrl` mutually-exclusive **required** options
+   on the constructor — `new PrismaClient({ log })` alone no longer
+   typechecks. We use `@prisma/adapter-pg` (installed alongside `pg` /
+   `@types/pg`) and instantiate it from `DATABASE_URL`. See
+   `lib/prisma.ts`. The pg adapter takes a connection string, a
+   `pg.PoolConfig`, or an externally-managed `pg.Pool` — when we wire
+   Supabase, we'll likely want a tuned `PoolConfig` for the pooled URL
+   rather than a bare string.
+6. **The generated client has no `index.ts`.** The doc shows
+   `import { PrismaClient } from "@/lib/generated/prisma"`, but the v7
+   generator writes `client.ts` / `browser.ts` / etc. with no barrel.
+   Under bundler resolution, server code must import from
+   `@/lib/generated/prisma/client` (server entry) — `browser.ts` is
+   the client-safe variant we don't use server-side.
+7. **Seed config moved to `prisma.config.ts`.** The v6-era pattern of
+   `"prisma": { "seed": "..." }` in `package.json` is ignored in v7;
+   `prisma db seed` exits with "No seed command configured" and points
+   at `migrations.seed` in `prisma.config.ts`. The current config sets
+   `migrations.seed = "tsx prisma/seed.ts"`. `dotenv` is now an
+   explicit devDep (the seed loads `.env.local` directly, matching how
+   `prisma.config.ts` does it).
+8. **`Json` columns reject strictly-typed interfaces.** Prisma's
+   `InputJsonValue` requires an index signature, so passing our
+   `ProductSpecs` / `ProductShipping` / etc. directly is a TS2322. The
+   seed widens them through an `asJson()` helper (cast via `unknown`).
+   Apply the same pattern in admin write routes (§10) when accepting
+   editorial blobs.
 
 ---
 
@@ -104,6 +151,13 @@ docker exec -it revolucion-db psql -U revolucion -d revolucion -c "select versio
 If port 5432 is taken on Windows (common — pgAdmin, another Postgres
 service), change the host-side port to `5433:5432` and update
 `DATABASE_URL` accordingly.
+
+> **This machine hit that case.** Windows service `postgresql-x64-17`
+> is bound to `5432`, so Docker silently lost the bind even though
+> `docker compose ps` showed the mapping. The current
+> `docker-compose.yml` uses `"5433:5432"` and `.env.local` URLs point
+> at `localhost:5433`. If you ever stop the Windows service and want
+> the canonical port back, revert both files together.
 
 ---
 
@@ -156,6 +210,20 @@ This writes `prisma/schema.prisma` and adds `DATABASE_URL` to `.env`.
 `.env.local` instead — the project already uses `.env.local` for
 secrets and that's what Next.js loads in dev.
 
+> Done. Prisma v7.8 also writes a `prisma.config.ts` (not in v6); we
+> edited it to load `.env.local`:
+>
+> ```ts
+> import { config as loadEnv } from "dotenv";
+> import { defineConfig } from "prisma/config";
+> loadEnv({ path: ".env.local" });
+> export default defineConfig({
+>   schema: "prisma/schema.prisma",
+>   migrations: { path: "prisma/migrations" },
+>   datasource: { url: process.env["DATABASE_URL"] },
+> });
+> ```
+
 ---
 
 ## 4. Environment variables
@@ -164,13 +232,17 @@ Add to `.env.local` (local dev — points at Docker Postgres):
 
 ```
 # --- backend ---
-DATABASE_URL="postgresql://revolucion:revolucion_dev@localhost:5432/revolucion?schema=public"
-DIRECT_URL="postgresql://revolucion:revolucion_dev@localhost:5432/revolucion?schema=public"
+DATABASE_URL="postgresql://revolucion:revolucion_dev@localhost:5433/revolucion?schema=public"
+DIRECT_URL="postgresql://revolucion:revolucion_dev@localhost:5433/revolucion?schema=public"
 
 # admin auth
-ADMIN_PASSWORD_HASH=""        # bcrypt hash, generated in step 7
+ADMIN_PASSWORD_HASH=""        # bcrypt hash, generated in step 8
 ADMIN_SESSION_SECRET=""       # 32+ random bytes, used to sign the cookie
 ```
+
+> Status: DB URLs filled (port `5433`, see §1 note). `ADMIN_*` still
+> empty — fill during §8. `.env.example` has not yet been mirrored;
+> do it when §8 lands so all four backend keys are added at once.
 
 For local dev, `DATABASE_URL` and `DIRECT_URL` are the same (no
 pooler in front of Docker Postgres). The variable still has to exist
@@ -199,19 +271,24 @@ is already gitignored (it is, by Next's default `.gitignore`).
 
 ## 5. Schema — mirror `lib/types.ts`
 
+> **DONE.** Migration `20260525035611_init` applied locally; client
+> generated to `lib/generated/prisma/`. The code block below has been
+> updated to the v7-shaped version we actually use — kept here as the
+> source-of-truth for future schema edits.
+
 Translate the existing `Product` type into Prisma models.
 
 `prisma/schema.prisma`:
 
 ```prisma
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  // url / directUrl live in prisma.config.ts — Prisma v7 forbids them here
 }
 
 enum Category {
@@ -287,11 +364,14 @@ Create the first migration against your local Docker DB:
 
 ```
 npx prisma migrate dev --name init
+npx prisma generate          # v7: separate step, no longer implicit
 ```
 
-This creates `prisma/migrations/` (commit it), applies the migration to
-your local DB, and runs `prisma generate`. Commit the migration folder
-— it is the source of truth for schema history.
+This creates `prisma/migrations/` (commit it) and applies the migration
+to your local DB. Commit the migration folder — it is the source of
+truth for schema history. The v6 doc claimed `migrate dev` also runs
+`generate`; on v7 it does not, so run `generate` explicitly (or wire it
+into the build / postinstall script later).
 
 To apply the same migration to Supabase later:
 
@@ -307,44 +387,75 @@ dev-only command. Production uses `migrate deploy` exclusively.
 
 ## 6. Prisma client singleton
 
+> **DONE.** `lib/prisma.ts` exists; v7 forced two deviations from the
+> code block below (deviations 5 and 6 in the §Prisma v7 deviations
+> table). The block here is the **as-shipped** version.
+
 Next.js dev mode hot-reloads modules, which leaks Prisma client
-instances and eventually exhausts DB connections. Create
-`lib/prisma.ts`:
+instances and eventually exhausts DB connections. `lib/prisma.ts`:
 
 ```ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@/lib/generated/prisma/client";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient(): PrismaClient {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error("DATABASE_URL is not set");
+  }
+  const adapter = new PrismaPg(url);
+  return new PrismaClient({
+    adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 ```
 
-Never import `PrismaClient` directly anywhere else. Always import
-`{ prisma }` from `@/lib/prisma`. **Never use this from a client
-component** — server-only.
+Never import `PrismaClient` from `@/lib/generated/prisma/client`
+anywhere else. Always import `{ prisma }` from `@/lib/prisma`. **Never
+use this from a client component** — server-only.
 
 ---
 
 ## 7. Seed from the existing catalog
 
-The hand-edited `PRODUCTS` array in `lib/products.ts` is your seed
-data. Write `prisma/seed.ts`:
+> **DONE.** `prisma/seed.ts` exists; 15 products upserted into local
+> Docker Postgres on 2026-05-24. v7 forced three deviations from the
+> doc's original code (driver adapter, `client` import path, `Json`
+> cast — see deviations 5, 6, 8) plus the seed-config move (deviation
+> 7). The code block below is the **as-shipped** version.
+
+The hand-edited `PRODUCTS` array in `lib/products.ts` is the seed data.
+`prisma/seed.ts`:
 
 ```ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { config as loadEnv } from "dotenv";
+import { PrismaClient } from "../lib/generated/prisma/client";
+import type { Prisma } from "../lib/generated/prisma/client";
 import { PRODUCTS } from "../lib/products";
 
-const prisma = new PrismaClient();
+loadEnv({ path: ".env.local" });
+
+const url = process.env.DATABASE_URL;
+if (!url) {
+  throw new Error("DATABASE_URL is not set");
+}
+
+const prisma = new PrismaClient({ adapter: new PrismaPg(url) });
+
+const asJson = <T,>(value: T | undefined): Prisma.InputJsonValue | undefined =>
+  value === undefined ? undefined : (value as unknown as Prisma.InputJsonValue);
 
 async function main() {
   for (const p of PRODUCTS) {
@@ -365,10 +476,10 @@ async function main() {
         lede: p.lede,
         images: p.images,
         imageLabels: p.imageLabels ?? [],
-        specs: p.specs ?? null,
-        shipping: p.shipping ?? null,
-        story: p.story ?? null,
-        quote: p.quote ?? null,
+        specs: asJson(p.specs),
+        shipping: asJson(p.shipping),
+        story: asJson(p.story),
+        quote: asJson(p.quote),
         variants: {
           create: p.sizes.map((size) => ({
             size,
@@ -379,6 +490,7 @@ async function main() {
       },
     });
   }
+  console.log(`Seeded ${PRODUCTS.length} products.`);
 }
 
 main()
@@ -389,12 +501,13 @@ main()
   });
 ```
 
-Wire it into `package.json`:
+Wire it into `prisma.config.ts` (NOT `package.json` — see deviation 7):
 
-```json
-"prisma": {
-  "seed": "tsx prisma/seed.ts"
-}
+```ts
+migrations: {
+  path: "prisma/migrations",
+  seed: "tsx prisma/seed.ts",
+},
 ```
 
 Run it locally:
@@ -404,10 +517,9 @@ npx prisma db seed
 npx prisma studio       # browse the data in a UI to confirm
 ```
 
-Once seeding works, **do not delete `lib/products.ts` yet.** Keep it as
-a fallback / source of truth until the storefront is fully wired to
-the DB. That swap happens in the frontend-integration milestone, not
-here.
+`lib/products.ts` is still in place — keep it as a fallback / source of
+truth until the storefront is fully wired to the DB. That swap happens
+in the frontend-integration milestone, not here.
 
 For Supabase, run the seed once against prod after `migrate deploy`
 succeeds — same command, just with prod env vars loaded.
@@ -415,6 +527,11 @@ succeeds — same command, just with prod env vars loaded.
 ---
 
 ## 8. Admin auth
+
+> **TODO (Batch B).** No `bcryptjs` / `jose` installed; no `lib/auth.ts`;
+> no `middleware.ts` at repo root; `ADMIN_PASSWORD_HASH` and
+> `ADMIN_SESSION_SECRET` still empty in `.env.local`. Secret generation
+> is a manual step for the operator — see commands below.
 
 Generate the hash and a session secret once, then paste into
 `.env.local` (and into Vercel for prod):
@@ -477,8 +594,14 @@ Don't build the login UI yet — that's frontend work. For now, the
 
 ## 9. Validation layer
 
+> **DONE.** `lib/schemas.ts` exists. As-shipped goes a bit beyond the
+> doc: the editorial blobs (`specs`, `shipping`, `story`, `quote`) are
+> typed sub-schemas mirroring `lib/types.ts`, and `ProductListQuery` is
+> exported for the `GET /api/products` query string. Sketch below; see
+> `lib/schemas.ts` for the full file.
+
 Every write endpoint validates its input with Zod **before** touching
-Prisma. Create `lib/schemas.ts`:
+Prisma. Shape of `lib/schemas.ts`:
 
 ```ts
 import { z } from "zod";
@@ -488,6 +611,9 @@ export const CategoryEnum = z.enum([
 ]);
 export const SizeEnum = z.enum(["S", "M", "L", "XL", "XXL"]);
 
+// typed sub-schemas for the Json columns — keeps end-to-end safety
+// const ProductSpecs / ProductShipping / ProductStory / ProductQuote = ...
+
 export const ProductCreate = z.object({
   slug: z.string().min(1).regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
@@ -495,35 +621,52 @@ export const ProductCreate = z.object({
   price: z.number().int().nonnegative(),
   category: CategoryEnum,
   featured: z.boolean().default(false),
+  status: z.string().optional(),
+  edition: z.string().optional(),
+  material: z.string().optional(),
+  finish: z.string().optional(),
+  lede: z.string().optional(),
   images: z.array(z.string()).min(1),
   imageLabels: z.array(z.string()).default([]),
+  specs: ProductSpecs.optional(),
+  shipping: ProductShipping.optional(),
+  story: ProductStory.optional(),
+  quote: ProductQuote.optional(),
   variants: z.array(z.object({
     size: SizeEnum,
     stock: z.number().int().nonnegative(),
     isDefault: z.boolean().default(false),
   })).min(1),
-  // editorial fields optional, mirror the TS types
 });
 
 export const ProductUpdate = ProductCreate.partial();
+
+export const ProductListQuery = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(100).default(24),
+  category: CategoryEnum.optional(),
+});
 ```
 
-Rule for every route handler: `const parsed = Schema.safeParse(body); if (!parsed.success) return 400;`. No exceptions.
+Rule for every route handler: `const parsed = Schema.safeParse(body); if (!parsed.success) return 400;`. No exceptions. Already applied to `GET /api/products` (validates query string); apply to every admin write route in Batch B.
 
 ---
 
 ## 10. Minimal API surface to stand up first
 
-Build just enough to prove the backend works end-to-end. **Do not
-build admin pages yet.** These are all under `app/api/`.
+> **PARTIAL.** Public read routes shipped in Batch A; admin auth +
+> write routes still TODO in Batch B. **Do not build admin pages yet.**
+> All routes live under `app/api/`.
 
-- `POST /api/admin/login` — accepts `{ password }`, sets cookie.
-- `POST /api/admin/logout` — clears cookie.
-- `GET  /api/products` — public, paginated list.
-- `GET  /api/products/[slug]` — public, single product.
-- `POST /api/admin/products` — create. Auth required.
-- `PATCH /api/admin/products/[slug]` — update. Auth required.
-- `DELETE /api/admin/products/[slug]` — delete. Auth required.
+| Method · Path                          | Status | Notes |
+|----------------------------------------|--------|-------|
+| `GET  /api/products`                   | **DONE** | `app/api/products/route.ts`; validates query via `ProductListQuery`; returns `{ items, page, pageSize, total, totalPages }`; includes `variants`. |
+| `GET  /api/products/[slug]`            | **DONE** | `app/api/products/[slug]/route.ts`; 404 on miss; includes `variants`. |
+| `POST /api/admin/login`                | TODO   | Accepts `{ password }`, sets `revolucion-admin` cookie. |
+| `POST /api/admin/logout`               | TODO   | Clears cookie. |
+| `POST /api/admin/products`             | TODO   | Create. Auth required. Validate with `ProductCreate`. |
+| `PATCH /api/admin/products/[slug]`     | TODO   | Update. Auth required. Validate with `ProductUpdate`. |
+| `DELETE /api/admin/products/[slug]`    | TODO   | Delete. Auth required. |
 
 After each write, call `revalidateTag("products")` or
 `revalidatePath("/catalogo")` on success so the static catalog stays
@@ -538,14 +681,15 @@ required yet.
 
 You are done with preparation when **all** of these pass:
 
-- [ ] `docker compose up -d` brings up Postgres; `docker compose ps`
-      shows it running.
-- [ ] `npx prisma migrate status` reports up to date locally.
-- [ ] `npx prisma db seed` populates the local DB without errors;
+- [x] `docker compose up -d` brings up Postgres; `docker compose ps`
+      shows it running. *(Host port `5433`, see §1 note.)*
+- [x] `npx prisma migrate status` reports up to date locally.
+- [x] `npx prisma db seed` populates the local DB without errors;
       `prisma studio` shows every product from `lib/products.ts`.
-- [ ] `curl http://localhost:3000/api/products` returns JSON matching
+      *(15 products upserted on 2026-05-24.)*
+- [x] `curl http://localhost:3000/api/products` returns JSON matching
       seeded data.
-- [ ] `curl http://localhost:3000/api/products/<known-slug>` returns
+- [x] `curl http://localhost:3000/api/products/<known-slug>` returns
       one product with its variants.
 - [ ] `curl -X POST .../api/admin/products` **without** a cookie
       returns 401/redirect.
@@ -554,11 +698,13 @@ You are done with preparation when **all** of these pass:
       new product appears in `prisma studio`.
 - [ ] Invalid input (missing `slug`, negative `price`) returns 400 with
       a Zod-formatted error, not a 500.
-- [ ] Supabase project exists; `npx prisma migrate deploy` with prod
-      env vars succeeds; seed runs once against prod.
+- [~] Supabase project exists; `npx prisma migrate deploy` with prod
+      env vars succeeds; seed runs once against prod. *(Project exists;
+      deploy + seed against it not yet run.)*
 - [ ] `yarn build` still passes — no TS errors, no Prisma type drift.
 - [ ] `.env.example` lists every new variable; `.env.local` is still
-      gitignored.
+      gitignored. *(`.env.local` is gitignored; `.env.example` not yet
+      updated.)*
 
 When the checklist is green, the backend is ready. The next milestone
 — replacing `lib/products.ts` reads with Prisma reads, building the
