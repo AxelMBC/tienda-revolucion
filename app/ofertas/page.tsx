@@ -4,7 +4,7 @@ import { Room } from "@/components/ui/Room";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Hairline } from "@/components/ui/Hairline";
 import { CatalogCard } from "@/components/product/CatalogCard";
-import { deriveCardStatus, getPicks } from "@/lib/products";
+import { deriveCardStatus, getPicks } from "@/lib/catalog";
 import styles from "./ofertas.module.css";
 
 export const metadata: Metadata = {
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/ofertas" },
 };
 
-export default function OfertasPage() {
-  const picks = getPicks();
+export default async function OfertasPage() {
+  const picks = await getPicks();
   const countLabel = picks.length === 1 ? "1 pieza" : `${picks.length} piezas`;
 
   return (

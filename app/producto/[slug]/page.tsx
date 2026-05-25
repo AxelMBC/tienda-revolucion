@@ -7,27 +7,29 @@ import { PiezaStory } from "@/components/product/PiezaStory";
 import { PiezaQuote } from "@/components/product/PiezaQuote";
 import { PiezaRelated } from "@/components/product/PiezaRelated";
 import {
-  PRODUCTS,
   categorySingular,
+  getAllProducts,
   getBySlug,
   getRelatedPieces,
-} from "@/lib/products";
-import type { Size } from "@/lib/types";
+} from "@/lib/catalog";
+import { prisma } from "@/lib/prisma";
+import type { Product, Size } from "@/lib/types";
 import styles from "./producto.module.css";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  const rows = await prisma.product.findMany({ select: { slug: true } });
+  return rows.map((r) => ({ slug: r.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getBySlug(slug);
+  const product = await getBySlug(slug);
   if (!product) return { title: "Producto no encontrado" };
   return {
     title: product.name,
@@ -46,8 +48,7 @@ function formatNumber(idx: number): string {
   return String(idx + 1).padStart(2, "0");
 }
 
-function pickDefaultSize(product: ReturnType<typeof getBySlug>): Size {
-  if (!product) return "M";
+function pickDefaultSize(product: Product): Size {
   if (product.defaultSize && product.sizes.includes(product.defaultSize)) {
     return product.defaultSize;
   }
@@ -56,13 +57,16 @@ function pickDefaultSize(product: ReturnType<typeof getBySlug>): Size {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getBySlug(slug);
+  const [product, allProducts] = await Promise.all([
+    getBySlug(slug),
+    getAllProducts(),
+  ]);
   if (!product) notFound();
 
-  const allIdx = PRODUCTS.findIndex((p) => p.slug === product.slug);
+  const allIdx = allProducts.findIndex((p) => p.slug === product.slug);
   const number = formatNumber(allIdx);
-  const next = PRODUCTS[(allIdx + 1) % PRODUCTS.length];
-  const nextNumber = formatNumber((allIdx + 1) % PRODUCTS.length);
+  const next = allProducts[(allIdx + 1) % allProducts.length];
+  const nextNumber = formatNumber((allIdx + 1) % allProducts.length);
 
   const categoryLabel = product.material
     ? `${categorySingular(product.category)} · ${product.material}`
@@ -91,7 +95,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "Caída",
   ];
 
-  const related = getRelatedPieces(product.slug, 3);
+  const related = await getRelatedPieces(product.slug, 3);
   const defaultSize = pickDefaultSize(product);
 
   const siteUrl =

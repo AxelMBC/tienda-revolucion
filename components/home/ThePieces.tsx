@@ -1,7 +1,7 @@
 import { Room } from "@/components/ui/Room";
 import { Piece } from "@/components/ui/Piece";
 import { Reveal } from "@/components/ui/Reveal";
-import { getFeatured } from "@/lib/products";
+import { getFeatured } from "@/lib/catalog";
 import type { Category, Size } from "@/lib/types";
 import styles from "./ThePieces.module.css";
 
@@ -20,8 +20,8 @@ const formatPrice = (n: number) => `$${n.toLocaleString("es-MX")} mxn`;
 const formatSizes = (sizes: Size[]) =>
   sizes.length > 1 ? `${sizes[0]} — ${sizes[sizes.length - 1]}` : sizes[0];
 
-export function ThePieces() {
-  const featured = getFeatured().slice(0, 4);
+export async function ThePieces() {
+  const featured = (await getFeatured()).slice(0, 4);
 
   return (
     <Room tone="ink" id="piezas">

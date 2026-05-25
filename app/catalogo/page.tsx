@@ -8,7 +8,7 @@ import {
   deriveCardStatus,
   filterProducts,
   getCategoryMeta,
-} from "@/lib/products";
+} from "@/lib/catalog";
 import type { Category, Size, SortKey } from "@/lib/types";
 import styles from "./catalogo.module.css";
 
@@ -66,7 +66,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const category = parseCategory(sp.category);
   const size = parseSize(sp.size);
   const sort = parseSort(sp.sort);
-  const products = filterProducts({ category, size, sort });
+  const products = await filterProducts({ category, size, sort });
 
   const countLabel =
     products.length === 1 ? "1 pieza" : `${products.length} piezas`;
