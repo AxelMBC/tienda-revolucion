@@ -2,13 +2,12 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { ALL_SIZES, getCategories, getCategoryCounts } from "@/lib/products";
+import { ALL_SIZES, getCategories } from "@/lib/products";
 import type { Category, Size, SortKey } from "@/lib/types";
 import styles from "./CatalogFilters.module.css";
 
+// Category labels/order are static presentation metadata (not in the DB).
 const categories = getCategories();
-const categoryCounts = getCategoryCounts();
-const totalCount = Object.values(categoryCounts).reduce((s, n) => s + n, 0);
 
 const SORTS: { key: SortKey; label: string }[] = [
   { key: "llegada", label: "Llegada" },
@@ -17,9 +16,14 @@ const SORTS: { key: SortKey; label: string }[] = [
 
 interface CatalogFiltersProps {
   filteredCount: number;
+  categoryCounts: Record<Category, number>;
 }
 
-export function CatalogFilters({ filteredCount }: CatalogFiltersProps) {
+export function CatalogFilters({
+  filteredCount,
+  categoryCounts,
+}: CatalogFiltersProps) {
+  const totalCount = Object.values(categoryCounts).reduce((s, n) => s + n, 0);
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

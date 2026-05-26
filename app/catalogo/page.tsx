@@ -5,8 +5,10 @@ import { Hairline } from "@/components/ui/Hairline";
 import { CatalogFilters } from "@/components/filters/CatalogFilters";
 import { CatalogCard } from "@/components/product/CatalogCard";
 import {
+  applyCatalogFilters,
+  countByCategory,
   deriveCardStatus,
-  filterProducts,
+  getAllProducts,
   getCategoryMeta,
 } from "@/lib/catalog";
 import type { Category, Size, SortKey } from "@/lib/types";
@@ -66,7 +68,12 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
   const category = parseCategory(sp.category);
   const size = parseSize(sp.size);
   const sort = parseSort(sp.sort);
-  const products = await filterProducts({ category, size, sort });
+
+  // Single query: fetch the whole catalog once, then derive the grid and the
+  // filter counts in memory.
+  const allProducts = await getAllProducts();
+  const categoryCounts = countByCategory(allProducts);
+  const products = applyCatalogFilters(allProducts, { category, size, sort });
 
   const countLabel =
     products.length === 1 ? "1 pieza" : `${products.length} piezas`;
@@ -86,7 +93,10 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       />
       <Room tone="ivory" id="catalogo" compactTop>
       <div className={styles.head}>
-        <CatalogFilters filteredCount={products.length} />
+        <CatalogFilters
+          filteredCount={products.length}
+          categoryCounts={categoryCounts}
+        />
       </div>
 
       <Hairline />

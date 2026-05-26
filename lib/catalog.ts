@@ -110,10 +110,7 @@ export async function filterProducts(opts: {
       ...(opts.size ? { variants: { some: { size: opts.size } } } : {}),
     },
     include: { variants: true },
-    orderBy:
-      opts.sort === "precio"
-        ? { price: "asc" }
-        : { createdAt: "asc" },
+    orderBy: opts.sort === "precio" ? { price: "asc" } : { createdAt: "asc" },
   });
   return rows.map(mapDbProduct);
 }
@@ -137,6 +134,40 @@ export async function getRelatedPieces(
   const different = mapped.filter((p) => p.category !== current.category);
   const same = mapped.filter((p) => p.category === current.category);
   return [...different, ...same].slice(0, max);
+}
+
+export function applyCatalogFilters(
+  products: Product[],
+  opts: { category?: Category; size?: Size; sort?: SortKey },
+): Product[] {
+  let result = products;
+  if (opts.category) {
+    result = result.filter((p) => p.category === opts.category);
+  }
+  if (opts.size) {
+    const size = opts.size;
+    result = result.filter((p) => p.sizes.includes(size));
+  }
+  // "llegada" relies on getAllProducts' createdAt-asc order; only price re-sorts.
+  if (opts.sort === "precio") {
+    result = [...result].sort((a, b) => a.price - b.price);
+  }
+  return result;
+}
+
+// Category counts derived from an already-fetched product set (no extra query).
+export function countByCategory(products: Product[]): Record<Category, number> {
+  const counts: Record<Category, number> = {
+    camisas: 0,
+    playeras: 0,
+    pantalones: 0,
+    chaquetas: 0,
+    accesorios: 0,
+  };
+  for (const p of products) {
+    counts[p.category] += 1;
+  }
+  return counts;
 }
 
 export async function getCategoryCounts(): Promise<Record<Category, number>> {
